@@ -10,11 +10,6 @@ max(#frame) = 777
 """
 
 
-# For workstation.
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
-
-
 import numpy
 import sys
 import re
@@ -25,6 +20,8 @@ try:
     dataPath = sys.argv[1]
 except:
     dataPath = 'data/'
+
+maxTimesteps = 777
 
 
 # Create a map from Phones to Categorical Indices.
@@ -54,15 +51,25 @@ with open(dataPath + '/mfcc/train.ark') as file:
         if None == strIdPrev:
             strIdPrev = strId
         elif strIdPrev != strId:        # New speakId_sentenceId.
-            instances += [ numpy.array(frames, dtype='float16').reshape(1, -1, len(frames[0])) ]
+            instances += [ numpy.concatenate(
+                ( numpy.zeros( (maxTimesteps-len(frames), len(frames[0])) ),    # Dummy inputs.
+                  numpy.array(frames, dtype='float16') ),
+                0                       # Along axis=0, i.e., num_sample dimension.
+            ) ]
             strIdPrev = strId
             frames    = []
 
         frames += [ line[1: ] ]
 
     # For the last speakId_sentenceId.
-    instances += [ numpy.array(frames, dtype='float16').reshape(1, -1, len(frames[0])) ]
+    instances += [ numpy.concatenate(
+        ( numpy.zeros( (maxTimesteps-len(frames), len(frames[0])) ),            # Dummy inputs.
+          numpy.array(frames, dtype='float16') ),
+        0                               # Along axis=0, i.e., num_sample dimension.
+    ) ]
     frames    = None
+
+instances = numpy.array(instances)
 
 
 # Read training labels.
@@ -78,12 +85,22 @@ with open(dataPath + '/label/train.lab') as file:
         if None == iIdPrev:
             iIdPrev = iId
         elif iIdPrev != iId:            # New speakId_sentenceId.
-            labels[iIdPrev] = numpy.array(frames).reshape(1, -1, 48)
+            labels[iIdPrev] = numpy.concatenate(
+                ( numpy.zeros( (maxTimesteps-len(frames), 48) ),                # Dummy inputs.
+                  np_utils.to_categorical(frames, num_classes=48) ),
+                0                       # Along axis=0, i.e., num_sample dimension.
+            )
             iIdPrev         = iId
             frames          = []
 
-        frames += [ np_utils.to_categorical(dictPhone_CateIdx[ line[1] ], num_classes=48) ]
+        frames += [ dictPhone_CateIdx[ line[1] ] ]
 
     # For the last speakId_sentenceId.
-    labels[iId] = numpy.array(frames).reshape(1, -1, 48)
+    labels[iIdPrev] = numpy.concatenate(
+        ( numpy.zeros( (maxTimesteps-len(frames), 48) ),                        # Dummy inputs.
+          np_utils.to_categorical(frames, num_classes=48) ),
+        0                               # Along axis=0, i.e., num_sample dimension.
+    )
     frames      = None
+
+labels = numpy.array(labels)

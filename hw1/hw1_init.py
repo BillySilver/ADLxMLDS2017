@@ -26,6 +26,8 @@ try:
 except:
     outputFileName = 'result.csv'
 
+maxTimesteps = 777
+
 
 # Create a map from 48 Phones to 39 Phones.
 dictPhone48_39 = {}
@@ -53,7 +55,7 @@ for i in range(len(dictCateIdx_Phone)):
 
 
 # Read test instances.
-dictId = {}
+dictId_Cnt = {}
 
 strIdPrev = None
 strIds    = []
@@ -64,19 +66,30 @@ with open(dataPath + '/mfcc/test.ark') as file:
         line  = line.split()
         strId = re.findall(r'^.+(?=_\d+)', line[0])[0]
 
-        if strId not in dictId:
-            dictId[strId] = True
+        if strId not in dictId_Cnt:
+            dictId_Cnt[strId] = 0
             strIds += [ strId ]
+        dictId_Cnt[strId] += 1
 
         if None == strIdPrev:
             strIdPrev = strId
         elif strIdPrev != strId:        # New speakId_sentenceId.
-            instances += [ numpy.array(frames, dtype='float16').reshape(1, -1, len(frames[0])) ]
+            instances += [ numpy.concatenate(
+                ( numpy.zeros( (maxTimesteps-len(frames), len(frames[0])) ),    # Dummy inputs.
+                  numpy.array(frames, dtype='float16') ),
+                0                       # Along axis=0, i.e., num_sample dimension.
+            ) ]
             strIdPrev = strId
             frames    = []
 
         frames += [ line[1: ] ]
 
     # For the last speakId_sentenceId.
-    instances += [ numpy.array(frames, dtype='float16').reshape(1, -1, len(frames[0])) ]
+    instances += [ numpy.concatenate(
+        ( numpy.zeros( (maxTimesteps-len(frames), len(frames[0])) ),            # Dummy inputs.
+          numpy.array(frames, dtype='float16') ),
+        0                               # Along axis=0, i.e., num_sample dimension.
+    ) ]
     frames    = None
+
+instances = numpy.array(instances)

@@ -1,10 +1,5 @@
-
-hw1/data/*
-
-*/__pycache__
-
-hw1/*.pdf
-
+*/__pycache__/
 */result.csv
 
-hw1/*.h5
+hw1/data/
+hw1/*.pdf
