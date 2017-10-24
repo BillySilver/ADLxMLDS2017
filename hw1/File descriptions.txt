@@ -1,0 +1,9 @@
+File descriptions
+
+sample.csv - template to upload your answer
+48_39.map - map 48 phone to 39 phone
+48phone_char.map - map 48 phone to english character
+train.lab - label of training data
+fbank.zip - fbank features of training and testing data
+mfcc.zip - mfcc features of training and testing data
+wav.zip - original sound files

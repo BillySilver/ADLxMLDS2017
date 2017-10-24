@@ -1,0 +1,10 @@
+
+hw1/data/*
+
+*/__pycache__
+
+hw1/*.pdf
+
+*/result.csv
+
+hw1/*.h5
