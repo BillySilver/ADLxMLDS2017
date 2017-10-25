@@ -14,6 +14,8 @@ import numpy
 import sys
 import re
 from keras.utils import np_utils
+from sklearn.decomposition import PCA
+from sklearn.externals import joblib
 
 
 try:
@@ -39,7 +41,8 @@ cnt       = 0
 strIdPrev = None
 frames    = []
 instances = []
-with open(dataPath + '/mfcc/train.ark') as file:
+nFrames   = []
+with open(dataPath + '/fbank/train.ark') as file:
     for line in file:
         line  = line.split()
         strId = re.findall(r'^.+(?=_\d+)', line[0])[0]
@@ -51,25 +54,54 @@ with open(dataPath + '/mfcc/train.ark') as file:
         if None == strIdPrev:
             strIdPrev = strId
         elif strIdPrev != strId:        # New speakId_sentenceId.
-            instances += [ numpy.concatenate(
-                ( numpy.zeros( (maxTimesteps-len(frames), len(frames[0])) ),    # Dummy inputs.
-                  numpy.array(frames, dtype='float16') ),
-                0                       # Along axis=0, i.e., num_sample dimension.
-            ) ]
+            instances += [ numpy.array(frames) ]
+            nFrames   += [ len(frames) ]
             strIdPrev = strId
             frames    = []
 
-        frames += [ line[1: ] ]
+        frames += [ [ float(ft) for ft in line[1: ] ] ]
 
     # For the last speakId_sentenceId.
-    instances += [ numpy.concatenate(
-        ( numpy.zeros( (maxTimesteps-len(frames), len(frames[0])) ),            # Dummy inputs.
-          numpy.array(frames, dtype='float16') ),
-        0                               # Along axis=0, i.e., num_sample dimension.
-    ) ]
+    instances += [ numpy.array(frames) ]
+    nFrames   += [ len(frames) ]
     frames    = None
 
-instances = numpy.array(instances)
+"""ZCA Whitening.
+
+Let X = instances (centered), where its shape is (m = #sample, n = #feature).
+Then X = U S V* (singular-value decomposition).
+Note that V* = PCA().components_ is an n-by-n unitary
+and each 'row' of it is a (right) singular vector of X.
+
+Steps:
+1) X_PCA  = X [dot] V.
+2) X_PCAW = sqrt(m) X_PCA [dot] S^-1.
+3) X_ZCAW = X_PCAW [dot] V*.
+
+(1) lets X transform into anohter coordinate system which has the orthonormal basis V.
+(2) makes sure that the variances of features = 1 (whitening).
+(3) rotates dataset to the original coordinate system.
+
+(1) and (2) are done by PCA(whiten=True).fit_transform().
+"""
+instances  = numpy.concatenate(instances)               # Design matrix. #row = #example; #column = #feature.
+PCA_Whiten = PCA(whiten=True)
+instances  = PCA_Whiten.fit_transform(instances)
+instances  = instances.dot(PCA_Whiten.components_)      # 3) X_ZCAW = X_PCAW [dot] V*.
+joblib.dump(PCA_Whiten, 'models/PCA_rnn.pkl')           # For testing later.
+
+_instances = []
+for i in range(len(nFrames)):
+    nFrame = nFrames[i]
+    _instances += [ numpy.concatenate(
+        ( numpy.zeros( (maxTimesteps-nFrame, instances.shape[-1]) ),            # Dummy inputs.
+          instances[ :nFrame] ),
+        0                       # Along axis=0, i.e., num_sample dimension.
+    ) ]
+    instances = instances[nFrame: ]
+instances  = _instances
+_instances = None
+instances  = numpy.array(instances, dtype='float16')
 
 
 # Read training labels.

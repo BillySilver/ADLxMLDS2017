@@ -14,6 +14,8 @@ import numpy
 import sys
 import re
 from keras.utils import np_utils
+from sklearn.decomposition import PCA
+from sklearn.externals import joblib
 
 
 try:
@@ -61,7 +63,9 @@ strIdPrev = None
 strIds    = []
 frames    = []
 instances = []
-with open(dataPath + '/mfcc/test.ark') as file:
+with open(dataPath + '/fbank/test.ark') as file:
+    PCA_Whiten = joblib.load('models/PCA_rnn.pkl')
+
     for line in file:
         line  = line.split()
         strId = re.findall(r'^.+(?=_\d+)', line[0])[0]
@@ -76,20 +80,20 @@ with open(dataPath + '/mfcc/test.ark') as file:
         elif strIdPrev != strId:        # New speakId_sentenceId.
             instances += [ numpy.concatenate(
                 ( numpy.zeros( (maxTimesteps-len(frames), len(frames[0])) ),    # Dummy inputs.
-                  numpy.array(frames, dtype='float16') ),
+                  PCA_Whiten.transform(numpy.array(frames)).dot(PCA_Whiten.components_) ),
                 0                       # Along axis=0, i.e., num_sample dimension.
             ) ]
             strIdPrev = strId
             frames    = []
 
-        frames += [ line[1: ] ]
+        frames += [ [ float(ft) for ft in line[1: ] ] ]
 
     # For the last speakId_sentenceId.
     instances += [ numpy.concatenate(
         ( numpy.zeros( (maxTimesteps-len(frames), len(frames[0])) ),            # Dummy inputs.
-          numpy.array(frames, dtype='float16') ),
+          PCA_Whiten.transform(numpy.array(frames)).dot(PCA_Whiten.components_) ),
         0                               # Along axis=0, i.e., num_sample dimension.
     ) ]
     frames    = None
 
-instances = numpy.array(instances)
+instances = numpy.array(instances, dtype='float16')

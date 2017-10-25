@@ -3,7 +3,7 @@ from keras.utils import np_utils
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Masking
 from keras.layers.recurrent import LSTM
-from keras.layers.wrappers import TimeDistributed
+from keras.layers.wrappers import TimeDistributed, Bidirectional
 
 
 try:
@@ -16,11 +16,13 @@ except:
 
     model = Sequential()
     model.add(Masking(mask_value=0, input_shape=(maxTimesteps, input_dim)))
-    model.add(LSTM(units=256,
-                   return_sequences=True))
+    model.add(Bidirectional(LSTM(units=128,
+                                 return_sequences=True),
+                            merge_mode='concat'))
     model.add(TimeDistributed(Dropout(rate=0.5)))
-    model.add(LSTM(units=256,
-                   return_sequences=True))
+    model.add(Bidirectional(LSTM(units=128,
+                                 return_sequences=True),
+                            merge_mode='concat'))
     model.add(TimeDistributed(Dropout(rate=0.5)))
     model.add(TimeDistributed(Dense(units=48, activation='softmax')))
     model.compile(loss='categorical_crossentropy', optimizer='nadam', metrics=['accuracy'])
@@ -28,5 +30,5 @@ except:
 
 
 # Training.
-model.fit(instances, labels, epochs=40, batch_size=64, validation_split=0)
+model.fit(instances, labels, epochs=60, batch_size=64, validation_split=0.2)
 model.save('models/model_rnn.h5')
