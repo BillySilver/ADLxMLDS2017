@@ -16,7 +16,10 @@ except:
 
     model = Sequential()
     model.add(Masking(mask_value=0, input_shape=(maxTimesteps, input_dim)))
-    model.add(LSTM(units=64,
+    model.add(LSTM(units=256,
+                   return_sequences=True))
+    model.add(TimeDistributed(Dropout(rate=0.5)))
+    model.add(LSTM(units=256,
                    return_sequences=True))
     model.add(TimeDistributed(Dropout(rate=0.5)))
     model.add(TimeDistributed(Dense(units=48, activation='softmax')))
@@ -25,5 +28,5 @@ except:
 
 
 # Training.
-model.fit(instances, labels, epochs=400, batch_size=32, validation_split=0.2)
+model.fit(instances, labels, epochs=100, batch_size=64, validation_split=0.2)
 model.save('models/model_rnn.h5')
