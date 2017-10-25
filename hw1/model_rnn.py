@@ -16,15 +16,14 @@ except:
 
     model = Sequential()
     model.add(Masking(mask_value=0, input_shape=(maxTimesteps, input_dim)))
-    model.add(LSTM(units=50,
+    model.add(LSTM(units=64,
                    return_sequences=True))
+    model.add(TimeDistributed(Dropout(rate=0.5)))
     model.add(TimeDistributed(Dense(units=48, activation='softmax')))
-    model.compile(loss='categorical_crossentropy', optimizer='nadam')
+    model.compile(loss='categorical_crossentropy', optimizer='nadam', metrics=['accuracy'])
     print('\n* Create a new model. *\n')
 
 
 # Training.
-model.fit(instances, labels, epochs=30, batch_size=64, validation_split=0.2)
+model.fit(instances, labels, epochs=400, batch_size=32, validation_split=0.2)
 model.save('models/model_rnn.h5')
-
-# It takes about 1 min each epoch.
