@@ -1,5 +1,4 @@
 from model_init import *
-from keras.utils import np_utils
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Masking
 from keras.layers.recurrent import LSTM
@@ -30,5 +29,5 @@ except:
 
 
 # Training.
-model.fit(instances, labels, epochs=40, batch_size=64, validation_split=0.2)
+model.fit(instances, labels, epochs=20, batch_size=64, validation_split=0)
 model.save('models/model_rnn.h5')
