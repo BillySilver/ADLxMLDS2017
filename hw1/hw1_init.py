@@ -63,7 +63,7 @@ strIdPrev = None
 strIds    = []
 frames    = []
 instances = []
-with open(dataPath + '/fbank/test.ark') as file:
+with open(dataPath + '/mfcc/test.ark') as file:
     PCA_Whiten = joblib.load('models/PCA_rnn.pkl')
 
     for line in file:

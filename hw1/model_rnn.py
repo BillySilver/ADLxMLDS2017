@@ -30,5 +30,5 @@ except:
 
 
 # Training.
-model.fit(instances, labels, epochs=20, batch_size=64, validation_split=0)
+model.fit(instances, labels, epochs=40, batch_size=64, validation_split=0.2)
 model.save('models/model_rnn.h5')

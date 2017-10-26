@@ -42,7 +42,7 @@ strIdPrev = None
 frames    = []
 instances = []
 nFrames   = []
-with open(dataPath + '/fbank/train.ark') as file:
+with open(dataPath + '/mfcc/train.ark') as file:
     for line in file:
         line  = line.split()
         strId = re.findall(r'^.+(?=_\d+)', line[0])[0]
