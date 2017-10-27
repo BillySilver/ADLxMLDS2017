@@ -15,6 +15,10 @@ except:
 
     model = Sequential()
     model.add(Masking(mask_value=0, input_shape=(maxTimesteps, input_dim)))
+    model.add(Bidirectional(LSTM(units=64,
+                                 return_sequences=True),
+                            merge_mode='concat'))
+    model.add(TimeDistributed(Dropout(rate=0.5)))
     model.add(Bidirectional(LSTM(units=128,
                                  return_sequences=True),
                             merge_mode='concat'))
@@ -29,5 +33,5 @@ except:
 
 
 # Training.
-model.fit(instances, labels, epochs=20, batch_size=64, validation_split=0)
+model.fit(instances, labels, epochs=100, batch_size=64, validation_split=0.2)
 model.save('models/model_rnn.h5')
