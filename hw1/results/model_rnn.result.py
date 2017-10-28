@@ -200,4 +200,5 @@ Epoch 99/100
 Epoch 100/100
 2956/2956 [==============================] - 375s - loss: 0.3056 - acc: 0.8975 - val_loss: 0.9681 - val_acc: 0.7726
 
-Public Score: 10.11299
+Public Score:  10.11299
+Private Score:  9.95421

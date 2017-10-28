@@ -88,7 +88,7 @@ instances  = numpy.concatenate(instances)               # Design matrix. #row = 
 PCA_Whiten = PCA(whiten=True)
 instances  = PCA_Whiten.fit_transform(instances)
 instances  = instances.dot(PCA_Whiten.components_)      # 3) X_ZCAW = X_PCAW [dot] V*.
-joblib.dump(PCA_Whiten, 'models/PCA_rnn.pkl')           # For testing later.
+joblib.dump(PCA_Whiten, 'models/PCA.pkl')               # For testing later.
 
 _instances = []
 for i in range(len(nFrames)):

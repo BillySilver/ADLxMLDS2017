@@ -64,7 +64,7 @@ strIds    = []
 frames    = []
 instances = []
 with open(dataPath + '/mfcc/test.ark') as file:
-    PCA_Whiten = joblib.load('models/PCA_rnn.pkl')
+    PCA_Whiten = joblib.load('models/PCA.pkl')
 
     for line in file:
         line  = line.split()
