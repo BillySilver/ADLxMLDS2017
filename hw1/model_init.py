@@ -23,6 +23,8 @@ try:
 except:
     dataPath = 'data/'
 
+# dataset: {'mfcc', 'fbank'}.
+dataset      = 'mfcc'
 maxTimesteps = 777
 
 
@@ -42,7 +44,7 @@ strIdPrev = None
 frames    = []
 instances = []
 nFrames   = []
-with open(dataPath + '/mfcc/train.ark') as file:
+with open(dataPath + '/' + dataset + '/train.ark') as file:
     for line in file:
         line  = line.split()
         strId = re.findall(r'^.+(?=_\d+)', line[0])[0]
@@ -85,10 +87,14 @@ Steps:
 (1) and (2) are done by PCA(whiten=True).fit_transform().
 """
 instances  = numpy.concatenate(instances)               # Design matrix. #row = #example; #column = #feature.
-PCA_Whiten = PCA(whiten=True)
-instances  = PCA_Whiten.fit_transform(instances)
-instances  = instances.dot(PCA_Whiten.components_)      # 3) X_ZCAW = X_PCAW [dot] V*.
-joblib.dump(PCA_Whiten, 'models/PCA.pkl')               # For testing later.
+try:
+    PCA_Whiten = joblib.load('models/PCA_%s.pkl' % dataset)
+    instances  = PCA_Whiten.transform(instances).dot(PCA_Whiten.components_)
+except:
+    PCA_Whiten = PCA(whiten=True)
+    instances  = PCA_Whiten.fit_transform(instances)
+    instances  = instances.dot(PCA_Whiten.components_)      # 3) X_ZCAW = X_PCAW [dot] V*.
+    joblib.dump(PCA_Whiten, 'models/PCA_%s.pkl' % dataset)  # For testing later.
 
 _instances = []
 for i in range(len(nFrames)):

@@ -1,5 +1,7 @@
 */__pycache__/
 */result.csv
+*/results/*
+!*/results/model_*.result.py
 
-hw1/data/
-hw1/ADLxMLDS HW1.pdf
+hw1/data/mfcc*
+hw1/data/fbank*

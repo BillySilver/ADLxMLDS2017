@@ -28,6 +28,8 @@ try:
 except:
     outputFileName = 'result.csv'
 
+# dataset: {'mfcc', 'fbank'}.
+dataset      = 'mfcc'
 maxTimesteps = 777
 
 
@@ -63,8 +65,8 @@ strIdPrev = None
 strIds    = []
 frames    = []
 instances = []
-with open(dataPath + '/mfcc/test.ark') as file:
-    PCA_Whiten = joblib.load('models/PCA.pkl')
+with open(dataPath + '/' + dataset + '/test.ark') as file:
+    PCA_Whiten = joblib.load('models/PCA_%s.pkl' % dataset)
 
     for line in file:
         line  = line.split()
