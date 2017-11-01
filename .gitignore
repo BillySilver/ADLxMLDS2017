@@ -1,7 +1,7 @@
 */__pycache__/
 */result.csv
 */results/*
-!*/results/model_*.result.py
+!*/results/model*.result.py
 
 hw0/data/*
 
