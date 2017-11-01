@@ -3,5 +3,7 @@
 */results/*
 !*/results/model_*.result.py
 
+hw0/data/*
+
 hw1/data/mfcc*
 hw1/data/fbank*
