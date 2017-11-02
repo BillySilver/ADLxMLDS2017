@@ -29,8 +29,15 @@ except:
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
     model.add(Dropout(rate=0.25))
 
+    model.add(Conv2D(filters=64,
+                     kernel_size=(4, 4),
+                     padding='same',
+                     activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+    model.add(Dropout(rate=0.5))
+
     model.add(Flatten())
-    model.add(Dense(units=512, activation='relu'))
+    model.add(Dense(units=1024, activation='relu'))
     model.add(Dropout(rate=0.5))
     model.add(Dense(units=10, activation='softmax'))
 
@@ -39,5 +46,5 @@ except:
 
 
 # Training.
-model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.2)
+model.fit(X_train, y_train, epochs=30, batch_size=32, validation_split=0.2)
 model.save('models/model.h5')
