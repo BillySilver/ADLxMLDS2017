@@ -27,13 +27,6 @@ except:
                      input_shape=(1, 28, 28),
                      activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
-    model.add(Dropout(rate=0.25))
-
-    model.add(Conv2D(filters=64,
-                     kernel_size=(4, 4),
-                     padding='same',
-                     activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
     model.add(Dropout(rate=0.5))
 
     model.add(Flatten())
