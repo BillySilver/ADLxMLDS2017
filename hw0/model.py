@@ -37,7 +37,7 @@ except:
     model.add(Dropout(rate=0.5))
 
     model.add(Flatten())
-    model.add(Dense(units=2048, activation='relu'))
+    model.add(Dense(units=1024, activation='relu'))
     model.add(Dropout(rate=0.5))
     model.add(Dense(units=10, activation='softmax'))
 
