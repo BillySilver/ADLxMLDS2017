@@ -18,12 +18,14 @@ try:
     model = load_model('models/model.h5')
     print('\n* Has loaded existed model. *\n')
 except:
+    from keras import backend as K
+    K.set_image_dim_ordering('th')  # data_format='channels_first'.
+
     # Building a Convolutional Neural Network.
     model = Sequential()
     model.add(Conv2D(filters=128,
                      kernel_size=(4, 4),
                      padding='same',
-                     data_format='channels_first',
                      input_shape=(1, 28, 28),
                      activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
@@ -42,6 +44,7 @@ except:
     model.add(Dense(units=10, activation='softmax'))
 
     model.compile(loss='categorical_crossentropy', optimizer='nadam', metrics=['accuracy'])
+    model.summary()
     print('\n* Create a new model. *\n')
 
 
