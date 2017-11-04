@@ -23,7 +23,7 @@ except:
 
     # Building a Convolutional Neural Network.
     model = Sequential()
-    model.add(Conv2D(filters=16,
+    model.add(Conv2D(filters=32,
                      kernel_size=(4, 4),
                      padding='same',
                      input_shape=(1, 28, 28),
