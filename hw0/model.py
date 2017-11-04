@@ -47,6 +47,8 @@ except:
     model.add(Dropout(rate=0.5))
 
     model.add(Flatten())
+    model.add(Dense(units=512, activation='relu'))
+    model.add(Dropout(rate=0.5))
     model.add(Dense(units=10, activation='softmax'))
 
     model.compile(loss='categorical_crossentropy', optimizer='nadam', metrics=['accuracy'])
