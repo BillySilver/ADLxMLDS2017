@@ -88,6 +88,11 @@ class Layer_BOS_PrevLabels(Layer):
         super(Layer_BOS_PrevLabels, self).__init__(**kwargs)
         self.idxBOS = idxBOS
 
+    def get_config(self):
+        config = {'idxBOS': self.idxBOS}
+        base_config = super(Layer_BOS_PrevLabels, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))
+
     def call(self, inputs):
         # For each caption, remove the last word vector and append a zero-vector to the beginning.
         _inputs = K.temporal_padding(inputs[:, 0:-1, :], padding=(1, 0))
