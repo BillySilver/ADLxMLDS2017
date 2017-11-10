@@ -18,6 +18,12 @@ from sklearn.decomposition import PCA
 from sklearn.externals import joblib
 
 
+import os
+try:
+    os.stat('models/')
+except:
+    os.mkdir('models/')
+
 try:
     dataPath = sys.argv[1]
 except:
