@@ -7,3 +7,7 @@ hw0/data/*
 
 hw1/data/mfcc*
 hw1/data/fbank*
+
+hw2/MLDS_hw2_data/peer_review/*
+hw2/MLDS_hw2_data/testing_data/*
+hw2/MLDS_hw2_data/training_data/*
