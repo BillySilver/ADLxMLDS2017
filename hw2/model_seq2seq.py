@@ -35,7 +35,7 @@ except:
     Decoder_in  = Concatenate(axis=-1, name='Decoder_in')([Encoder_out, Labels_pad])
     x           = LSTM(units=1024, implementation=2, return_sequences=True)(Decoder_in)
     x           = Cropping1D(cropping=(80, 0))(x)
-    Decoder_out = TimeDistributed(Dense(units=nVocabFeat, activation='softmax', name='Decoder_out'))(x)
+    Decoder_out = TimeDistributed(Dense(units=nVocabFeat, activation='softmax'), name='Decoder_out')(x)
 
     model = Model(inputs=[Encoder_in, Labels_in], outputs=Decoder_out)
 

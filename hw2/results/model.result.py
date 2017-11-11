@@ -3,24 +3,24 @@ Layer (type)                     Output Shape          Param #     Connected to
 ====================================================================================================
 Encoder_in (InputLayer)          (None, 80, 4096)      0                                            
 ____________________________________________________________________________________________________
-Labels_in (InputLayer)           (None, 40, 6132)      0                                            
+Labels_in (InputLayer)           (None, 41, 6132)      0                                            
 ____________________________________________________________________________________________________
-zero_padding1d_1 (ZeroPadding1D) (None, 120, 4096)     0           Encoder_in[0][0]                 
+zero_padding1d_1 (ZeroPadding1D) (None, 121, 4096)     0           Encoder_in[0][0]                 
 ____________________________________________________________________________________________________
-layer_bos__prev_labels_1 (Layer_ (None, 40, 6132)      0           Labels_in[0][0]                  
+layer_bos__prev_labels_1 (Layer_ (None, 41, 6132)      0           Labels_in[0][0]                  
 ____________________________________________________________________________________________________
-Encoder_out (LSTM)               (None, 120, 1024)     20975616    zero_padding1d_1[0][0]           
+Encoder_out (LSTM)               (None, 121, 1024)     20975616    zero_padding1d_1[0][0]           
 ____________________________________________________________________________________________________
-Labels_pad (ZeroPadding1D)       (None, 120, 6132)     0           layer_bos__prev_labels_1[0][0]   
+Labels_pad (ZeroPadding1D)       (None, 121, 6132)     0           layer_bos__prev_labels_1[0][0]   
 ____________________________________________________________________________________________________
-Decoder_in (Concatenate)         (None, 120, 7156)     0           Encoder_out[0][0]                
+Decoder_in (Concatenate)         (None, 121, 7156)     0           Encoder_out[0][0]                
                                                                    Labels_pad[0][0]                 
 ____________________________________________________________________________________________________
-lstm_1 (LSTM)                    (None, 120, 1024)     33509376    Decoder_in[0][0]                 
+lstm_1 (LSTM)                    (None, 121, 1024)     33509376    Decoder_in[0][0]                 
 ____________________________________________________________________________________________________
-cropping1d_1 (Cropping1D)        (None, 40, 1024)      0           lstm_1[0][0]                     
+cropping1d_1 (Cropping1D)        (None, 41, 1024)      0           lstm_1[0][0]                     
 ____________________________________________________________________________________________________
-time_distributed_1 (TimeDistribu (None, 40, 6132)      6285300     cropping1d_1[0][0]               
+time_distributed_1 (TimeDistribu (None, 41, 6132)      6285300     cropping1d_1[0][0]               
 ====================================================================================================
 Total params: 60,770,292
 Trainable params: 60,770,292
@@ -32,400 +32,400 @@ ________________________________________________________________________________
 * Epoch 1/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 59s - loss: 6.2518 - orgCE: 1.2099 - myAcc: 0.1302 - acc: 0.0253 - val_loss: 5.6402 - val_orgCE: 1.1124 - val_myAcc: 0.1647 - val_acc: 0.0324
+1160/1160 [==============================] - 60s - loss: 5.9824 - orgCE: 1.2820 - myAcc: 0.1378 - acc: 0.3378 - val_loss: 5.2858 - val_orgCE: 1.1201 - val_myAcc: 0.2086 - val_acc: 0.8323
 * Epoch 2/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 5.4323 - orgCE: 1.0432 - myAcc: 0.1802 - acc: 0.0346 - val_loss: 5.2590 - val_orgCE: 0.9800 - val_myAcc: 0.2312 - val_acc: 0.0430
+1160/1160 [==============================] - 57s - loss: 5.0679 - orgCE: 1.0840 - myAcc: 0.2132 - acc: 0.8267 - val_loss: 5.0530 - val_orgCE: 1.1016 - val_myAcc: 0.2518 - val_acc: 0.6430
 * Epoch 3/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 5.0477 - orgCE: 0.9691 - myAcc: 0.2521 - acc: 0.0483 - val_loss: 4.9764 - val_orgCE: 0.9179 - val_myAcc: 0.2734 - val_acc: 0.0503
+1160/1160 [==============================] - 57s - loss: 4.7170 - orgCE: 0.9875 - myAcc: 0.2982 - acc: 0.7245 - val_loss: 4.8031 - val_orgCE: 1.0315 - val_myAcc: 0.2869 - val_acc: 0.8448
 * Epoch 4/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.9557 - orgCE: 0.9527 - myAcc: 0.2638 - acc: 0.0506 - val_loss: 4.9850 - val_orgCE: 0.9701 - val_myAcc: 0.2606 - val_acc: 0.0504
+1160/1160 [==============================] - 58s - loss: 4.6355 - orgCE: 0.9904 - myAcc: 0.2920 - acc: 0.8478 - val_loss: 4.7188 - val_orgCE: 1.0306 - val_myAcc: 0.3066 - val_acc: 0.8483
 * Epoch 5/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.8420 - orgCE: 0.9354 - myAcc: 0.2644 - acc: 0.0511 - val_loss: 4.9127 - val_orgCE: 0.9686 - val_myAcc: 0.2656 - val_acc: 0.0521
+1160/1160 [==============================] - 57s - loss: 4.5832 - orgCE: 0.9958 - myAcc: 0.2939 - acc: 0.8461 - val_loss: 4.5974 - val_orgCE: 0.9838 - val_myAcc: 0.3123 - val_acc: 0.8519
 * Epoch 6/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.7936 - orgCE: 0.9173 - myAcc: 0.2633 - acc: 0.0503 - val_loss: 4.8791 - val_orgCE: 0.9496 - val_myAcc: 0.2818 - val_acc: 0.0547
+1160/1160 [==============================] - 57s - loss: 4.4989 - orgCE: 0.9623 - myAcc: 0.2994 - acc: 0.8493 - val_loss: 4.6585 - val_orgCE: 1.0362 - val_myAcc: 0.3028 - val_acc: 0.8447
 * Epoch 7/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 4.7658 - orgCE: 0.9236 - myAcc: 0.2651 - acc: 0.0512 - val_loss: 4.9488 - val_orgCE: 0.9782 - val_myAcc: 0.2666 - val_acc: 0.0526
+1160/1160 [==============================] - 57s - loss: 4.4490 - orgCE: 0.9430 - myAcc: 0.3048 - acc: 0.8523 - val_loss: 4.6089 - val_orgCE: 1.0007 - val_myAcc: 0.2978 - val_acc: 0.8461
 * Epoch 8/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.7527 - orgCE: 0.9153 - myAcc: 0.2572 - acc: 0.0495 - val_loss: 4.7289 - val_orgCE: 0.8835 - val_myAcc: 0.2807 - val_acc: 0.0524
+1160/1160 [==============================] - 57s - loss: 4.4542 - orgCE: 0.9492 - myAcc: 0.3045 - acc: 0.8513 - val_loss: 4.4794 - val_orgCE: 0.9490 - val_myAcc: 0.3206 - val_acc: 0.8550
 * Epoch 9/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.6962 - orgCE: 0.8985 - myAcc: 0.2656 - acc: 0.0507 - val_loss: 4.8229 - val_orgCE: 0.9348 - val_myAcc: 0.2627 - val_acc: 0.0509
+1160/1160 [==============================] - 57s - loss: 4.4676 - orgCE: 0.9677 - myAcc: 0.2941 - acc: 0.8462 - val_loss: 4.5708 - val_orgCE: 0.9843 - val_myAcc: 0.3053 - val_acc: 0.8501
 * Epoch 10/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 4.6209 - orgCE: 0.8859 - myAcc: 0.2686 - acc: 0.0513 - val_loss: 4.8412 - val_orgCE: 0.9311 - val_myAcc: 0.2714 - val_acc: 0.0522
+1160/1160 [==============================] - 58s - loss: 4.3512 - orgCE: 0.9195 - myAcc: 0.3048 - acc: 0.8528 - val_loss: 4.4377 - val_orgCE: 0.9463 - val_myAcc: 0.3220 - val_acc: 0.8552
 * Epoch 11/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 4.6214 - orgCE: 0.8794 - myAcc: 0.2678 - acc: 0.0509 - val_loss: 4.7969 - val_orgCE: 0.9169 - val_myAcc: 0.2595 - val_acc: 0.0495
+1160/1160 [==============================] - 57s - loss: 4.3050 - orgCE: 0.9044 - myAcc: 0.3090 - acc: 0.8546 - val_loss: 4.6276 - val_orgCE: 1.0150 - val_myAcc: 0.3011 - val_acc: 0.8464
 * Epoch 12/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.5892 - orgCE: 0.8823 - myAcc: 0.2681 - acc: 0.0513 - val_loss: 4.7835 - val_orgCE: 0.9496 - val_myAcc: 0.2701 - val_acc: 0.0534
+1160/1160 [==============================] - 57s - loss: 4.3202 - orgCE: 0.9263 - myAcc: 0.3016 - acc: 0.8493 - val_loss: 4.4624 - val_orgCE: 0.9423 - val_myAcc: 0.3082 - val_acc: 0.8537
 * Epoch 13/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.5795 - orgCE: 0.8840 - myAcc: 0.2596 - acc: 0.0501 - val_loss: 4.6597 - val_orgCE: 0.9049 - val_myAcc: 0.2703 - val_acc: 0.0521
+1160/1160 [==============================] - 57s - loss: 4.2564 - orgCE: 0.9206 - myAcc: 0.3020 - acc: 0.8486 - val_loss: 4.4854 - val_orgCE: 0.9726 - val_myAcc: 0.3017 - val_acc: 0.8483
 * Epoch 14/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.4814 - orgCE: 0.8601 - myAcc: 0.2742 - acc: 0.0525 - val_loss: 4.6572 - val_orgCE: 0.9184 - val_myAcc: 0.2613 - val_acc: 0.0513
+1160/1160 [==============================] - 57s - loss: 4.2233 - orgCE: 0.8992 - myAcc: 0.3006 - acc: 0.8506 - val_loss: 4.4300 - val_orgCE: 0.9733 - val_myAcc: 0.3058 - val_acc: 0.8467
 * Epoch 15/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.4821 - orgCE: 0.8620 - myAcc: 0.2635 - acc: 0.0505 - val_loss: 4.7331 - val_orgCE: 0.9429 - val_myAcc: 0.2594 - val_acc: 0.0516
+1160/1160 [==============================] - 58s - loss: 4.1414 - orgCE: 0.8729 - myAcc: 0.3103 - acc: 0.8534 - val_loss: 4.3964 - val_orgCE: 0.9467 - val_myAcc: 0.3108 - val_acc: 0.8504
 * Epoch 16/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.4512 - orgCE: 0.8510 - myAcc: 0.2594 - acc: 0.0495 - val_loss: 4.5483 - val_orgCE: 0.8870 - val_myAcc: 0.2812 - val_acc: 0.0546
+1160/1160 [==============================] - 58s - loss: 4.1370 - orgCE: 0.8962 - myAcc: 0.3121 - acc: 0.8488 - val_loss: 4.2337 - val_orgCE: 0.8999 - val_myAcc: 0.3375 - val_acc: 0.8583
 * Epoch 17/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.4206 - orgCE: 0.8641 - myAcc: 0.2603 - acc: 0.0508 - val_loss: 4.6054 - val_orgCE: 0.8978 - val_myAcc: 0.2803 - val_acc: 0.0543
+1160/1160 [==============================] - 57s - loss: 4.0256 - orgCE: 0.8513 - myAcc: 0.3242 - acc: 0.8538 - val_loss: 4.2723 - val_orgCE: 0.9474 - val_myAcc: 0.3322 - val_acc: 0.8468
 * Epoch 18/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.3743 - orgCE: 0.8603 - myAcc: 0.2621 - acc: 0.0513 - val_loss: 4.5580 - val_orgCE: 0.8940 - val_myAcc: 0.2822 - val_acc: 0.0553
+1160/1160 [==============================] - 57s - loss: 4.0623 - orgCE: 0.8798 - myAcc: 0.3209 - acc: 0.8455 - val_loss: 4.2184 - val_orgCE: 0.8777 - val_myAcc: 0.3320 - val_acc: 0.8587
 * Epoch 19/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.3463 - orgCE: 0.8430 - myAcc: 0.2684 - acc: 0.0519 - val_loss: 4.4528 - val_orgCE: 0.8489 - val_myAcc: 0.2919 - val_acc: 0.0553
+1160/1160 [==============================] - 58s - loss: 3.9954 - orgCE: 0.8434 - myAcc: 0.3296 - acc: 0.8540 - val_loss: 4.2374 - val_orgCE: 0.9073 - val_myAcc: 0.3418 - val_acc: 0.8568
 * Epoch 20/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.3318 - orgCE: 0.8377 - myAcc: 0.2669 - acc: 0.0515 - val_loss: 4.5244 - val_orgCE: 0.8820 - val_myAcc: 0.2808 - val_acc: 0.0545
+1160/1160 [==============================] - 57s - loss: 3.9644 - orgCE: 0.8479 - myAcc: 0.3256 - acc: 0.8518 - val_loss: 4.1408 - val_orgCE: 0.8764 - val_myAcc: 0.3428 - val_acc: 0.8543
 * Epoch 21/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.3339 - orgCE: 0.8482 - myAcc: 0.2736 - acc: 0.0533 - val_loss: 4.4173 - val_orgCE: 0.8492 - val_myAcc: 0.2869 - val_acc: 0.0551
+1160/1160 [==============================] - 57s - loss: 3.9678 - orgCE: 0.8481 - myAcc: 0.3287 - acc: 0.8496 - val_loss: 4.1310 - val_orgCE: 0.8823 - val_myAcc: 0.3312 - val_acc: 0.8546
 * Epoch 22/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.2317 - orgCE: 0.8281 - myAcc: 0.2784 - acc: 0.0543 - val_loss: 4.4421 - val_orgCE: 0.8610 - val_myAcc: 0.2826 - val_acc: 0.0547
+1160/1160 [==============================] - 57s - loss: 3.9825 - orgCE: 0.8595 - myAcc: 0.3301 - acc: 0.8484 - val_loss: 4.1273 - val_orgCE: 0.8745 - val_myAcc: 0.3435 - val_acc: 0.8599
 * Epoch 23/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.2189 - orgCE: 0.8310 - myAcc: 0.2752 - acc: 0.0541 - val_loss: 4.5352 - val_orgCE: 0.8672 - val_myAcc: 0.2869 - val_acc: 0.0546
+1160/1160 [==============================] - 57s - loss: 3.9202 - orgCE: 0.8388 - myAcc: 0.3310 - acc: 0.8528 - val_loss: 4.1054 - val_orgCE: 0.8844 - val_myAcc: 0.3449 - val_acc: 0.8504
 * Epoch 24/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.1637 - orgCE: 0.8114 - myAcc: 0.2835 - acc: 0.0550 - val_loss: 4.4431 - val_orgCE: 0.8676 - val_myAcc: 0.2994 - val_acc: 0.0576
+1160/1160 [==============================] - 58s - loss: 3.8545 - orgCE: 0.8151 - myAcc: 0.3387 - acc: 0.8544 - val_loss: 4.0080 - val_orgCE: 0.8428 - val_myAcc: 0.3453 - val_acc: 0.8585
 * Epoch 25/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.1081 - orgCE: 0.7982 - myAcc: 0.2926 - acc: 0.0566 - val_loss: 4.3650 - val_orgCE: 0.8402 - val_myAcc: 0.2949 - val_acc: 0.0566
+1160/1160 [==============================] - 58s - loss: 3.7906 - orgCE: 0.8114 - myAcc: 0.3462 - acc: 0.8513 - val_loss: 4.0089 - val_orgCE: 0.8209 - val_myAcc: 0.3569 - val_acc: 0.8616
 * Epoch 26/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.0908 - orgCE: 0.7787 - myAcc: 0.2923 - acc: 0.0555 - val_loss: 4.4210 - val_orgCE: 0.8566 - val_myAcc: 0.2871 - val_acc: 0.0556
+1160/1160 [==============================] - 57s - loss: 3.8544 - orgCE: 0.8483 - myAcc: 0.3386 - acc: 0.8470 - val_loss: 3.9869 - val_orgCE: 0.8201 - val_myAcc: 0.3685 - val_acc: 0.8571
 * Epoch 27/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.0774 - orgCE: 0.7777 - myAcc: 0.2871 - acc: 0.0547 - val_loss: 4.3542 - val_orgCE: 0.8222 - val_myAcc: 0.3012 - val_acc: 0.0566
+1160/1160 [==============================] - 57s - loss: 3.7724 - orgCE: 0.8096 - myAcc: 0.3504 - acc: 0.8532 - val_loss: 4.0811 - val_orgCE: 0.8923 - val_myAcc: 0.3606 - val_acc: 0.8563
 * Epoch 28/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 4.0741 - orgCE: 0.7911 - myAcc: 0.2867 - acc: 0.0554 - val_loss: 4.2097 - val_orgCE: 0.7920 - val_myAcc: 0.3117 - val_acc: 0.0586
+1160/1160 [==============================] - 57s - loss: 3.7242 - orgCE: 0.7929 - myAcc: 0.3551 - acc: 0.8577 - val_loss: 4.0198 - val_orgCE: 0.8511 - val_myAcc: 0.3483 - val_acc: 0.8512
 * Epoch 29/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.9802 - orgCE: 0.7607 - myAcc: 0.3021 - acc: 0.0575 - val_loss: 4.4392 - val_orgCE: 0.8640 - val_myAcc: 0.2807 - val_acc: 0.0545
+1160/1160 [==============================] - 57s - loss: 3.6543 - orgCE: 0.7652 - myAcc: 0.3625 - acc: 0.8589 - val_loss: 4.1092 - val_orgCE: 0.9011 - val_myAcc: 0.3451 - val_acc: 0.8550
 * Epoch 30/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.9289 - orgCE: 0.7493 - myAcc: 0.3085 - acc: 0.0587 - val_loss: 4.2884 - val_orgCE: 0.8320 - val_myAcc: 0.3212 - val_acc: 0.0619
+1160/1160 [==============================] - 57s - loss: 3.6817 - orgCE: 0.7917 - myAcc: 0.3525 - acc: 0.8561 - val_loss: 3.9457 - val_orgCE: 0.8604 - val_myAcc: 0.3594 - val_acc: 0.8543
 * Epoch 31/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.9689 - orgCE: 0.7778 - myAcc: 0.3009 - acc: 0.0589 - val_loss: 4.3419 - val_orgCE: 0.8355 - val_myAcc: 0.3038 - val_acc: 0.0584
+1160/1160 [==============================] - 58s - loss: 3.6341 - orgCE: 0.7686 - myAcc: 0.3637 - acc: 0.8602 - val_loss: 3.9010 - val_orgCE: 0.8162 - val_myAcc: 0.3674 - val_acc: 0.8648
 * Epoch 32/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.8927 - orgCE: 0.7418 - myAcc: 0.3097 - acc: 0.0589 - val_loss: 4.3165 - val_orgCE: 0.8472 - val_myAcc: 0.3097 - val_acc: 0.0607
+1160/1160 [==============================] - 57s - loss: 3.6394 - orgCE: 0.7725 - myAcc: 0.3647 - acc: 0.8605 - val_loss: 3.9619 - val_orgCE: 0.8627 - val_myAcc: 0.3523 - val_acc: 0.8521
 * Epoch 33/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 3.9205 - orgCE: 0.7695 - myAcc: 0.3060 - acc: 0.0598 - val_loss: 4.2701 - val_orgCE: 0.8468 - val_myAcc: 0.3193 - val_acc: 0.0628
+1160/1160 [==============================] - 57s - loss: 3.6647 - orgCE: 0.7876 - myAcc: 0.3635 - acc: 0.8581 - val_loss: 3.8102 - val_orgCE: 0.7844 - val_myAcc: 0.3696 - val_acc: 0.8615
 * Epoch 34/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 3.8722 - orgCE: 0.7434 - myAcc: 0.3124 - acc: 0.0599 - val_loss: 4.2806 - val_orgCE: 0.8362 - val_myAcc: 0.3082 - val_acc: 0.0600
+1160/1160 [==============================] - 58s - loss: 3.5337 - orgCE: 0.7457 - myAcc: 0.3752 - acc: 0.8599 - val_loss: 3.8390 - val_orgCE: 0.7994 - val_myAcc: 0.3644 - val_acc: 0.8643
 * Epoch 35/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.8800 - orgCE: 0.7686 - myAcc: 0.3134 - acc: 0.0619 - val_loss: 4.1759 - val_orgCE: 0.7943 - val_myAcc: 0.3089 - val_acc: 0.0586
+1160/1160 [==============================] - 57s - loss: 3.5353 - orgCE: 0.7474 - myAcc: 0.3731 - acc: 0.8608 - val_loss: 4.0026 - val_orgCE: 0.8440 - val_myAcc: 0.3639 - val_acc: 0.8632
 * Epoch 36/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 3.7912 - orgCE: 0.7219 - myAcc: 0.3259 - acc: 0.0617 - val_loss: 4.2187 - val_orgCE: 0.7791 - val_myAcc: 0.3117 - val_acc: 0.0575
+1160/1160 [==============================] - 57s - loss: 3.4539 - orgCE: 0.7175 - myAcc: 0.3825 - acc: 0.8667 - val_loss: 3.8268 - val_orgCE: 0.8178 - val_myAcc: 0.3754 - val_acc: 0.8524
 * Epoch 37/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.8339 - orgCE: 0.7442 - myAcc: 0.3140 - acc: 0.0609 - val_loss: 4.1953 - val_orgCE: 0.8298 - val_myAcc: 0.3241 - val_acc: 0.0641
+1160/1160 [==============================] - 57s - loss: 3.5386 - orgCE: 0.7725 - myAcc: 0.3723 - acc: 0.8524 - val_loss: 4.0214 - val_orgCE: 0.8600 - val_myAcc: 0.3654 - val_acc: 0.8604
 * Epoch 38/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.7100 - orgCE: 0.7159 - myAcc: 0.3338 - acc: 0.0642 - val_loss: 4.0460 - val_orgCE: 0.7558 - val_myAcc: 0.3255 - val_acc: 0.0607
+1160/1160 [==============================] - 57s - loss: 3.4585 - orgCE: 0.7445 - myAcc: 0.3788 - acc: 0.8607 - val_loss: 3.8076 - val_orgCE: 0.8041 - val_myAcc: 0.3833 - val_acc: 0.8484
 * Epoch 39/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.7044 - orgCE: 0.7297 - myAcc: 0.3353 - acc: 0.0658 - val_loss: 4.0767 - val_orgCE: 0.7438 - val_myAcc: 0.3279 - val_acc: 0.0596
+1160/1160 [==============================] - 57s - loss: 3.3776 - orgCE: 0.7210 - myAcc: 0.3861 - acc: 0.8542 - val_loss: 3.9453 - val_orgCE: 0.8538 - val_myAcc: 0.3670 - val_acc: 0.8599
 * Epoch 40/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.7475 - orgCE: 0.7231 - myAcc: 0.3237 - acc: 0.0624 - val_loss: 4.2028 - val_orgCE: 0.8443 - val_myAcc: 0.3020 - val_acc: 0.0602
+1160/1160 [==============================] - 57s - loss: 3.4269 - orgCE: 0.7299 - myAcc: 0.3813 - acc: 0.8615 - val_loss: 3.8781 - val_orgCE: 0.8219 - val_myAcc: 0.3638 - val_acc: 0.8611
 * Epoch 41/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.7304 - orgCE: 0.7289 - myAcc: 0.3269 - acc: 0.0636 - val_loss: 4.1403 - val_orgCE: 0.8198 - val_myAcc: 0.3130 - val_acc: 0.0619
+1160/1160 [==============================] - 57s - loss: 3.4164 - orgCE: 0.7341 - myAcc: 0.3840 - acc: 0.8610 - val_loss: 3.8351 - val_orgCE: 0.8075 - val_myAcc: 0.3751 - val_acc: 0.8642
 * Epoch 42/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.6974 - orgCE: 0.7200 - myAcc: 0.3293 - acc: 0.0641 - val_loss: 4.1073 - val_orgCE: 0.7862 - val_myAcc: 0.3210 - val_acc: 0.0609
+1160/1160 [==============================] - 57s - loss: 3.4327 - orgCE: 0.7388 - myAcc: 0.3840 - acc: 0.8599 - val_loss: 3.8667 - val_orgCE: 0.8192 - val_myAcc: 0.3725 - val_acc: 0.8627
 * Epoch 43/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.6117 - orgCE: 0.6952 - myAcc: 0.3432 - acc: 0.0659 - val_loss: 4.1606 - val_orgCE: 0.8094 - val_myAcc: 0.3249 - val_acc: 0.0632
+1160/1160 [==============================] - 57s - loss: 3.2464 - orgCE: 0.6718 - myAcc: 0.4021 - acc: 0.8702 - val_loss: 3.8073 - val_orgCE: 0.8187 - val_myAcc: 0.3803 - val_acc: 0.8570
 * Epoch 44/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 3.6410 - orgCE: 0.7171 - myAcc: 0.3334 - acc: 0.0653 - val_loss: 4.0634 - val_orgCE: 0.7852 - val_myAcc: 0.3219 - val_acc: 0.0618
+1160/1160 [==============================] - 57s - loss: 3.3632 - orgCE: 0.7126 - myAcc: 0.3885 - acc: 0.8630 - val_loss: 3.7633 - val_orgCE: 0.8106 - val_myAcc: 0.3860 - val_acc: 0.8638
 * Epoch 45/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.6187 - orgCE: 0.7024 - myAcc: 0.3404 - acc: 0.0659 - val_loss: 4.2302 - val_orgCE: 0.8386 - val_myAcc: 0.3107 - val_acc: 0.0615
+1160/1160 [==============================] - 57s - loss: 3.3449 - orgCE: 0.7123 - myAcc: 0.3905 - acc: 0.8642 - val_loss: 3.8278 - val_orgCE: 0.8228 - val_myAcc: 0.3898 - val_acc: 0.8655
 * Epoch 46/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.6010 - orgCE: 0.6997 - myAcc: 0.3406 - acc: 0.0659 - val_loss: 4.1023 - val_orgCE: 0.8141 - val_myAcc: 0.3168 - val_acc: 0.0623
+1160/1160 [==============================] - 57s - loss: 3.2074 - orgCE: 0.6685 - myAcc: 0.4053 - acc: 0.8713 - val_loss: 3.7628 - val_orgCE: 0.7981 - val_myAcc: 0.3887 - val_acc: 0.8648
 * Epoch 47/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.5802 - orgCE: 0.6808 - myAcc: 0.3451 - acc: 0.0655 - val_loss: 4.0665 - val_orgCE: 0.8011 - val_myAcc: 0.3327 - val_acc: 0.0651
+1160/1160 [==============================] - 58s - loss: 3.2158 - orgCE: 0.6734 - myAcc: 0.4090 - acc: 0.8714 - val_loss: 3.7140 - val_orgCE: 0.7681 - val_myAcc: 0.3910 - val_acc: 0.8688
 * Epoch 48/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.5572 - orgCE: 0.6892 - myAcc: 0.3446 - acc: 0.0667 - val_loss: 4.0792 - val_orgCE: 0.8065 - val_myAcc: 0.3085 - val_acc: 0.0610
+1160/1160 [==============================] - 58s - loss: 3.2625 - orgCE: 0.7015 - myAcc: 0.3968 - acc: 0.8655 - val_loss: 3.8034 - val_orgCE: 0.8205 - val_myAcc: 0.3631 - val_acc: 0.8545
 * Epoch 49/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.5342 - orgCE: 0.6874 - myAcc: 0.3482 - acc: 0.0676 - val_loss: 3.9690 - val_orgCE: 0.7391 - val_myAcc: 0.3329 - val_acc: 0.0620
+1160/1160 [==============================] - 57s - loss: 3.2611 - orgCE: 0.7033 - myAcc: 0.3969 - acc: 0.8619 - val_loss: 3.6548 - val_orgCE: 0.7518 - val_myAcc: 0.4035 - val_acc: 0.8745
 * Epoch 50/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 3.5313 - orgCE: 0.6860 - myAcc: 0.3409 - acc: 0.0660 - val_loss: 4.0759 - val_orgCE: 0.7805 - val_myAcc: 0.3193 - val_acc: 0.0609
+1160/1160 [==============================] - 58s - loss: 3.1867 - orgCE: 0.6759 - myAcc: 0.4055 - acc: 0.8563 - val_loss: 3.8132 - val_orgCE: 0.8380 - val_myAcc: 0.3688 - val_acc: 0.8594
 * Epoch 51/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.5414 - orgCE: 0.7053 - myAcc: 0.3438 - acc: 0.0683 - val_loss: 4.0700 - val_orgCE: 0.7952 - val_myAcc: 0.3211 - val_acc: 0.0627
+1160/1160 [==============================] - 58s - loss: 3.2114 - orgCE: 0.6849 - myAcc: 0.4106 - acc: 0.8600 - val_loss: 3.7952 - val_orgCE: 0.8137 - val_myAcc: 0.3720 - val_acc: 0.8605
 * Epoch 52/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.4415 - orgCE: 0.6639 - myAcc: 0.3541 - acc: 0.0681 - val_loss: 4.2101 - val_orgCE: 0.8320 - val_myAcc: 0.3122 - val_acc: 0.0617
+1160/1160 [==============================] - 57s - loss: 3.1896 - orgCE: 0.6883 - myAcc: 0.4026 - acc: 0.8636 - val_loss: 3.7577 - val_orgCE: 0.8004 - val_myAcc: 0.3935 - val_acc: 0.8649
 * Epoch 53/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.4408 - orgCE: 0.6566 - myAcc: 0.3555 - acc: 0.0678 - val_loss: 4.1207 - val_orgCE: 0.8039 - val_myAcc: 0.3127 - val_acc: 0.0606
+1160/1160 [==============================] - 58s - loss: 3.1690 - orgCE: 0.6673 - myAcc: 0.4032 - acc: 0.8680 - val_loss: 3.7255 - val_orgCE: 0.7862 - val_myAcc: 0.3932 - val_acc: 0.8696
 * Epoch 54/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 3.4784 - orgCE: 0.6776 - myAcc: 0.3518 - acc: 0.0685 - val_loss: 4.0154 - val_orgCE: 0.7658 - val_myAcc: 0.3370 - val_acc: 0.0641
+1160/1160 [==============================] - 57s - loss: 3.1653 - orgCE: 0.6676 - myAcc: 0.4065 - acc: 0.8680 - val_loss: 3.7195 - val_orgCE: 0.7903 - val_myAcc: 0.3897 - val_acc: 0.8562
 * Epoch 55/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.4058 - orgCE: 0.6450 - myAcc: 0.3611 - acc: 0.0683 - val_loss: 4.0039 - val_orgCE: 0.7862 - val_myAcc: 0.3407 - val_acc: 0.0666
+1160/1160 [==============================] - 58s - loss: 3.1663 - orgCE: 0.6859 - myAcc: 0.4104 - acc: 0.8591 - val_loss: 3.7133 - val_orgCE: 0.7791 - val_myAcc: 0.3897 - val_acc: 0.8696
 * Epoch 56/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.3953 - orgCE: 0.6444 - myAcc: 0.3537 - acc: 0.0670 - val_loss: 3.9980 - val_orgCE: 0.7775 - val_myAcc: 0.3469 - val_acc: 0.0670
+1160/1160 [==============================] - 57s - loss: 3.1029 - orgCE: 0.6554 - myAcc: 0.4123 - acc: 0.8712 - val_loss: 3.8187 - val_orgCE: 0.8357 - val_myAcc: 0.3888 - val_acc: 0.8597
 * Epoch 57/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 3.3488 - orgCE: 0.6440 - myAcc: 0.3658 - acc: 0.0702 - val_loss: 4.1455 - val_orgCE: 0.8079 - val_myAcc: 0.3221 - val_acc: 0.0622
+1160/1160 [==============================] - 57s - loss: 3.1347 - orgCE: 0.6678 - myAcc: 0.4062 - acc: 0.8656 - val_loss: 3.7710 - val_orgCE: 0.8099 - val_myAcc: 0.3815 - val_acc: 0.8614
 * Epoch 58/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.4066 - orgCE: 0.6592 - myAcc: 0.3536 - acc: 0.0683 - val_loss: 4.0235 - val_orgCE: 0.7715 - val_myAcc: 0.3323 - val_acc: 0.0634
+1160/1160 [==============================] - 57s - loss: 3.0556 - orgCE: 0.6428 - myAcc: 0.4228 - acc: 0.8681 - val_loss: 3.7495 - val_orgCE: 0.8011 - val_myAcc: 0.3873 - val_acc: 0.8611
 * Epoch 59/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.3688 - orgCE: 0.6481 - myAcc: 0.3676 - acc: 0.0706 - val_loss: 4.1888 - val_orgCE: 0.8550 - val_myAcc: 0.3179 - val_acc: 0.0649
+1160/1160 [==============================] - 57s - loss: 3.0732 - orgCE: 0.6609 - myAcc: 0.4206 - acc: 0.8672 - val_loss: 3.6597 - val_orgCE: 0.7613 - val_myAcc: 0.3983 - val_acc: 0.8692
 * Epoch 60/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.3151 - orgCE: 0.6341 - myAcc: 0.3667 - acc: 0.0699 - val_loss: 4.1203 - val_orgCE: 0.8115 - val_myAcc: 0.3179 - val_acc: 0.0626
+1160/1160 [==============================] - 58s - loss: 3.1526 - orgCE: 0.6901 - myAcc: 0.4069 - acc: 0.8629 - val_loss: 3.6996 - val_orgCE: 0.8105 - val_myAcc: 0.3891 - val_acc: 0.8605
 * Epoch 61/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.3767 - orgCE: 0.6545 - myAcc: 0.3609 - acc: 0.0698 - val_loss: 3.9416 - val_orgCE: 0.7390 - val_myAcc: 0.3429 - val_acc: 0.0643
+1160/1160 [==============================] - 57s - loss: 3.0631 - orgCE: 0.6576 - myAcc: 0.4201 - acc: 0.8678 - val_loss: 3.7160 - val_orgCE: 0.7814 - val_myAcc: 0.3935 - val_acc: 0.8636
 * Epoch 62/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.3122 - orgCE: 0.6380 - myAcc: 0.3714 - acc: 0.0712 - val_loss: 3.9280 - val_orgCE: 0.7582 - val_myAcc: 0.3339 - val_acc: 0.0641
+1160/1160 [==============================] - 58s - loss: 3.0036 - orgCE: 0.6283 - myAcc: 0.4306 - acc: 0.8739 - val_loss: 3.5471 - val_orgCE: 0.7315 - val_myAcc: 0.4129 - val_acc: 0.8717
 * Epoch 63/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.2721 - orgCE: 0.6281 - myAcc: 0.3712 - acc: 0.0711 - val_loss: 4.2269 - val_orgCE: 0.8556 - val_myAcc: 0.3290 - val_acc: 0.0659
+1160/1160 [==============================] - 57s - loss: 2.9858 - orgCE: 0.6304 - myAcc: 0.4259 - acc: 0.8734 - val_loss: 3.7374 - val_orgCE: 0.7796 - val_myAcc: 0.3919 - val_acc: 0.8670
 * Epoch 64/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.2445 - orgCE: 0.6185 - myAcc: 0.3758 - acc: 0.0715 - val_loss: 4.0071 - val_orgCE: 0.7630 - val_myAcc: 0.3514 - val_acc: 0.0668
+1160/1160 [==============================] - 58s - loss: 3.0194 - orgCE: 0.6504 - myAcc: 0.4232 - acc: 0.8679 - val_loss: 3.5468 - val_orgCE: 0.7461 - val_myAcc: 0.4032 - val_acc: 0.8678
 * Epoch 65/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.2739 - orgCE: 0.6405 - myAcc: 0.3779 - acc: 0.0738 - val_loss: 3.9262 - val_orgCE: 0.7528 - val_myAcc: 0.3549 - val_acc: 0.0679
+1160/1160 [==============================] - 57s - loss: 2.9690 - orgCE: 0.6368 - myAcc: 0.4324 - acc: 0.8689 - val_loss: 3.7074 - val_orgCE: 0.7982 - val_myAcc: 0.3944 - val_acc: 0.8651
 * Epoch 66/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.2683 - orgCE: 0.6281 - myAcc: 0.3731 - acc: 0.0714 - val_loss: 4.0071 - val_orgCE: 0.7960 - val_myAcc: 0.3437 - val_acc: 0.0677
+1160/1160 [==============================] - 58s - loss: 2.9673 - orgCE: 0.6276 - myAcc: 0.4318 - acc: 0.8743 - val_loss: 3.5240 - val_orgCE: 0.7426 - val_myAcc: 0.4017 - val_acc: 0.8606
 * Epoch 67/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.2426 - orgCE: 0.6258 - myAcc: 0.3776 - acc: 0.0727 - val_loss: 3.9779 - val_orgCE: 0.7610 - val_myAcc: 0.3366 - val_acc: 0.0644
+1160/1160 [==============================] - 58s - loss: 2.9345 - orgCE: 0.6244 - myAcc: 0.4343 - acc: 0.8731 - val_loss: 3.6287 - val_orgCE: 0.7756 - val_myAcc: 0.3969 - val_acc: 0.8663
 * Epoch 68/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.1611 - orgCE: 0.6101 - myAcc: 0.3864 - acc: 0.0743 - val_loss: 3.9409 - val_orgCE: 0.7454 - val_myAcc: 0.3459 - val_acc: 0.0653
+1160/1160 [==============================] - 57s - loss: 2.9706 - orgCE: 0.6359 - myAcc: 0.4262 - acc: 0.8714 - val_loss: 3.6473 - val_orgCE: 0.7727 - val_myAcc: 0.4042 - val_acc: 0.8680
 * Epoch 69/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.2052 - orgCE: 0.6206 - myAcc: 0.3811 - acc: 0.0735 - val_loss: 4.0470 - val_orgCE: 0.8068 - val_myAcc: 0.3301 - val_acc: 0.0657
+1160/1160 [==============================] - 57s - loss: 2.9448 - orgCE: 0.6322 - myAcc: 0.4288 - acc: 0.8617 - val_loss: 3.6098 - val_orgCE: 0.7808 - val_myAcc: 0.3907 - val_acc: 0.8611
 * Epoch 70/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.1663 - orgCE: 0.6027 - myAcc: 0.3788 - acc: 0.0718 - val_loss: 4.0127 - val_orgCE: 0.7738 - val_myAcc: 0.3412 - val_acc: 0.0657
+1160/1160 [==============================] - 57s - loss: 2.9462 - orgCE: 0.6322 - myAcc: 0.4292 - acc: 0.8689 - val_loss: 3.6403 - val_orgCE: 0.7971 - val_myAcc: 0.3907 - val_acc: 0.8629
 * Epoch 71/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.1807 - orgCE: 0.6142 - myAcc: 0.3822 - acc: 0.0736 - val_loss: 3.9581 - val_orgCE: 0.7805 - val_myAcc: 0.3525 - val_acc: 0.0689
+1160/1160 [==============================] - 57s - loss: 2.8972 - orgCE: 0.6116 - myAcc: 0.4349 - acc: 0.8752 - val_loss: 3.6282 - val_orgCE: 0.7609 - val_myAcc: 0.4017 - val_acc: 0.8705
 * Epoch 72/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.1271 - orgCE: 0.5938 - myAcc: 0.3857 - acc: 0.0730 - val_loss: 4.0408 - val_orgCE: 0.8030 - val_myAcc: 0.3302 - val_acc: 0.0654
+1160/1160 [==============================] - 57s - loss: 2.8972 - orgCE: 0.6182 - myAcc: 0.4375 - acc: 0.8696 - val_loss: 3.7028 - val_orgCE: 0.7923 - val_myAcc: 0.3934 - val_acc: 0.8618
 * Epoch 73/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.1344 - orgCE: 0.6069 - myAcc: 0.3894 - acc: 0.0750 - val_loss: 3.9068 - val_orgCE: 0.7583 - val_myAcc: 0.3546 - val_acc: 0.0685
+1160/1160 [==============================] - 57s - loss: 2.9016 - orgCE: 0.6210 - myAcc: 0.4401 - acc: 0.8714 - val_loss: 3.7468 - val_orgCE: 0.8185 - val_myAcc: 0.3858 - val_acc: 0.8590
 * Epoch 74/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.2012 - orgCE: 0.6293 - myAcc: 0.3792 - acc: 0.0742 - val_loss: 3.9377 - val_orgCE: 0.7780 - val_myAcc: 0.3407 - val_acc: 0.0668
+1160/1160 [==============================] - 57s - loss: 2.8331 - orgCE: 0.5954 - myAcc: 0.4445 - acc: 0.8685 - val_loss: 3.7560 - val_orgCE: 0.8199 - val_myAcc: 0.4008 - val_acc: 0.8674
 * Epoch 75/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 3.0762 - orgCE: 0.5923 - myAcc: 0.3934 - acc: 0.0755 - val_loss: 3.8511 - val_orgCE: 0.7515 - val_myAcc: 0.3624 - val_acc: 0.0703
+1160/1160 [==============================] - 57s - loss: 2.8662 - orgCE: 0.6128 - myAcc: 0.4410 - acc: 0.8734 - val_loss: 3.6344 - val_orgCE: 0.7886 - val_myAcc: 0.4060 - val_acc: 0.8622
 * Epoch 76/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.1380 - orgCE: 0.6184 - myAcc: 0.3896 - acc: 0.0767 - val_loss: 3.9784 - val_orgCE: 0.7772 - val_myAcc: 0.3393 - val_acc: 0.0662
+1160/1160 [==============================] - 58s - loss: 2.8255 - orgCE: 0.6064 - myAcc: 0.4452 - acc: 0.8746 - val_loss: 3.6912 - val_orgCE: 0.8012 - val_myAcc: 0.4034 - val_acc: 0.8643
 * Epoch 77/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.1216 - orgCE: 0.6109 - myAcc: 0.3927 - acc: 0.0767 - val_loss: 4.0328 - val_orgCE: 0.7986 - val_myAcc: 0.3455 - val_acc: 0.0681
+1160/1160 [==============================] - 57s - loss: 2.8207 - orgCE: 0.5982 - myAcc: 0.4483 - acc: 0.8745 - val_loss: 3.6567 - val_orgCE: 0.7597 - val_myAcc: 0.4061 - val_acc: 0.8632
 * Epoch 78/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.0861 - orgCE: 0.6009 - myAcc: 0.3927 - acc: 0.0764 - val_loss: 4.0013 - val_orgCE: 0.7701 - val_myAcc: 0.3387 - val_acc: 0.0650
+1160/1160 [==============================] - 57s - loss: 2.8726 - orgCE: 0.6199 - myAcc: 0.4387 - acc: 0.8446 - val_loss: 3.6376 - val_orgCE: 0.7728 - val_myAcc: 0.3981 - val_acc: 0.8549
 * Epoch 79/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.0318 - orgCE: 0.5833 - myAcc: 0.4033 - acc: 0.0775 - val_loss: 3.9524 - val_orgCE: 0.7712 - val_myAcc: 0.3589 - val_acc: 0.0698
+1160/1160 [==============================] - 57s - loss: 2.8016 - orgCE: 0.6050 - myAcc: 0.4491 - acc: 0.8740 - val_loss: 3.5762 - val_orgCE: 0.7468 - val_myAcc: 0.4039 - val_acc: 0.8628
 * Epoch 80/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 2.9580 - orgCE: 0.5655 - myAcc: 0.4103 - acc: 0.0782 - val_loss: 4.0112 - val_orgCE: 0.7743 - val_myAcc: 0.3371 - val_acc: 0.0639
+1160/1160 [==============================] - 57s - loss: 2.7683 - orgCE: 0.5790 - myAcc: 0.4587 - acc: 0.8693 - val_loss: 3.4746 - val_orgCE: 0.7329 - val_myAcc: 0.4058 - val_acc: 0.8642
 * Epoch 81/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.0143 - orgCE: 0.5621 - myAcc: 0.4041 - acc: 0.0752 - val_loss: 4.0770 - val_orgCE: 0.7982 - val_myAcc: 0.3394 - val_acc: 0.0663
+1160/1160 [==============================] - 57s - loss: 2.8214 - orgCE: 0.6070 - myAcc: 0.4452 - acc: 0.8664 - val_loss: 3.7367 - val_orgCE: 0.8072 - val_myAcc: 0.3959 - val_acc: 0.8611
 * Epoch 82/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 3.0492 - orgCE: 0.5948 - myAcc: 0.4012 - acc: 0.0781 - val_loss: 3.9277 - val_orgCE: 0.7549 - val_myAcc: 0.3449 - val_acc: 0.0663
+1160/1160 [==============================] - 58s - loss: 2.7855 - orgCE: 0.5994 - myAcc: 0.4487 - acc: 0.8644 - val_loss: 3.7369 - val_orgCE: 0.8167 - val_myAcc: 0.3907 - val_acc: 0.8591
 * Epoch 83/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.0135 - orgCE: 0.5879 - myAcc: 0.3988 - acc: 0.0774 - val_loss: 3.9599 - val_orgCE: 0.7744 - val_myAcc: 0.3436 - val_acc: 0.0672
+1160/1160 [==============================] - 57s - loss: 2.7697 - orgCE: 0.5916 - myAcc: 0.4516 - acc: 0.8722 - val_loss: 3.4865 - val_orgCE: 0.7280 - val_myAcc: 0.4116 - val_acc: 0.8723
 * Epoch 84/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.0268 - orgCE: 0.5954 - myAcc: 0.3986 - acc: 0.0781 - val_loss: 4.0842 - val_orgCE: 0.8221 - val_myAcc: 0.3310 - val_acc: 0.0660
+1160/1160 [==============================] - 57s - loss: 2.7311 - orgCE: 0.5745 - myAcc: 0.4583 - acc: 0.8782 - val_loss: 3.5625 - val_orgCE: 0.7607 - val_myAcc: 0.4045 - val_acc: 0.8626
 * Epoch 85/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.0197 - orgCE: 0.5793 - myAcc: 0.4041 - acc: 0.0773 - val_loss: 3.8384 - val_orgCE: 0.7392 - val_myAcc: 0.3546 - val_acc: 0.0679
+1160/1160 [==============================] - 57s - loss: 2.6956 - orgCE: 0.5676 - myAcc: 0.4617 - acc: 0.8786 - val_loss: 3.6370 - val_orgCE: 0.7723 - val_myAcc: 0.4036 - val_acc: 0.8690
 * Epoch 86/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 2.9981 - orgCE: 0.5854 - myAcc: 0.4057 - acc: 0.0790 - val_loss: 3.7758 - val_orgCE: 0.7085 - val_myAcc: 0.3639 - val_acc: 0.0679
+1160/1160 [==============================] - 57s - loss: 2.7487 - orgCE: 0.5907 - myAcc: 0.4523 - acc: 0.8586 - val_loss: 3.5886 - val_orgCE: 0.7618 - val_myAcc: 0.4151 - val_acc: 0.8685
 * Epoch 87/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 3.0004 - orgCE: 0.5945 - myAcc: 0.4030 - acc: 0.0797 - val_loss: 4.0441 - val_orgCE: 0.8197 - val_myAcc: 0.3289 - val_acc: 0.0661
+1160/1160 [==============================] - 57s - loss: 2.6857 - orgCE: 0.5719 - myAcc: 0.4630 - acc: 0.8754 - val_loss: 3.6468 - val_orgCE: 0.7883 - val_myAcc: 0.4078 - val_acc: 0.8330
 * Epoch 88/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 2.9708 - orgCE: 0.5813 - myAcc: 0.4080 - acc: 0.0795 - val_loss: 3.9087 - val_orgCE: 0.7606 - val_myAcc: 0.3650 - val_acc: 0.0709
+1160/1160 [==============================] - 57s - loss: 2.7099 - orgCE: 0.5767 - myAcc: 0.4615 - acc: 0.8712 - val_loss: 3.6965 - val_orgCE: 0.8031 - val_myAcc: 0.3980 - val_acc: 0.8643
 * Epoch 89/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 2.9529 - orgCE: 0.5733 - myAcc: 0.4049 - acc: 0.0785 - val_loss: 3.9517 - val_orgCE: 0.7947 - val_myAcc: 0.3508 - val_acc: 0.0702
+1160/1160 [==============================] - 57s - loss: 2.6812 - orgCE: 0.5576 - myAcc: 0.4606 - acc: 0.8776 - val_loss: 3.6585 - val_orgCE: 0.7935 - val_myAcc: 0.3890 - val_acc: 0.8655
 * Epoch 90/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 2.8975 - orgCE: 0.5535 - myAcc: 0.4164 - acc: 0.0792 - val_loss: 3.9490 - val_orgCE: 0.7564 - val_myAcc: 0.3489 - val_acc: 0.0667
+1160/1160 [==============================] - 57s - loss: 2.6546 - orgCE: 0.5491 - myAcc: 0.4644 - acc: 0.8618 - val_loss: 3.6552 - val_orgCE: 0.7759 - val_myAcc: 0.3953 - val_acc: 0.8580
 * Epoch 91/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 2.9158 - orgCE: 0.5615 - myAcc: 0.4168 - acc: 0.0800 - val_loss: 3.9453 - val_orgCE: 0.7898 - val_myAcc: 0.3450 - val_acc: 0.0687
+1160/1160 [==============================] - 57s - loss: 2.7167 - orgCE: 0.5806 - myAcc: 0.4563 - acc: 0.8716 - val_loss: 3.6521 - val_orgCE: 0.7910 - val_myAcc: 0.4045 - val_acc: 0.8655
 * Epoch 92/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 2.9264 - orgCE: 0.5659 - myAcc: 0.4168 - acc: 0.0802 - val_loss: 3.7303 - val_orgCE: 0.7255 - val_myAcc: 0.3734 - val_acc: 0.0725
+1160/1160 [==============================] - 57s - loss: 2.6569 - orgCE: 0.5630 - myAcc: 0.4647 - acc: 0.8769 - val_loss: 3.6501 - val_orgCE: 0.7968 - val_myAcc: 0.4005 - val_acc: 0.8648
 * Epoch 93/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 56s - loss: 2.8788 - orgCE: 0.5574 - myAcc: 0.4129 - acc: 0.0800 - val_loss: 3.9493 - val_orgCE: 0.7689 - val_myAcc: 0.3464 - val_acc: 0.0672
+1160/1160 [==============================] - 57s - loss: 2.6652 - orgCE: 0.5774 - myAcc: 0.4635 - acc: 0.8706 - val_loss: 3.5335 - val_orgCE: 0.7622 - val_myAcc: 0.4153 - val_acc: 0.8707
 * Epoch 94/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 2.8936 - orgCE: 0.5597 - myAcc: 0.4187 - acc: 0.0808 - val_loss: 4.0183 - val_orgCE: 0.7942 - val_myAcc: 0.3404 - val_acc: 0.0669
+1160/1160 [==============================] - 58s - loss: 2.6036 - orgCE: 0.5473 - myAcc: 0.4692 - acc: 0.8453 - val_loss: 3.5993 - val_orgCE: 0.7726 - val_myAcc: 0.4090 - val_acc: 0.8655
 * Epoch 95/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 2.9399 - orgCE: 0.5782 - myAcc: 0.4096 - acc: 0.0805 - val_loss: 4.0281 - val_orgCE: 0.8094 - val_myAcc: 0.3469 - val_acc: 0.0696
+1160/1160 [==============================] - 57s - loss: 2.6261 - orgCE: 0.5625 - myAcc: 0.4649 - acc: 0.8537 - val_loss: 3.6565 - val_orgCE: 0.7962 - val_myAcc: 0.4099 - val_acc: 0.8632
 * Epoch 96/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 2.8444 - orgCE: 0.5552 - myAcc: 0.4277 - acc: 0.0831 - val_loss: 3.8668 - val_orgCE: 0.7743 - val_myAcc: 0.3594 - val_acc: 0.0717
+1160/1160 [==============================] - 57s - loss: 2.6104 - orgCE: 0.5538 - myAcc: 0.4667 - acc: 0.8787 - val_loss: 3.5338 - val_orgCE: 0.7332 - val_myAcc: 0.4249 - val_acc: 0.8491
 * Epoch 97/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 2.8509 - orgCE: 0.5545 - myAcc: 0.4252 - acc: 0.0825 - val_loss: 3.9218 - val_orgCE: 0.7702 - val_myAcc: 0.3642 - val_acc: 0.0714
+1160/1160 [==============================] - 58s - loss: 2.6552 - orgCE: 0.5715 - myAcc: 0.4657 - acc: 0.8525 - val_loss: 3.5747 - val_orgCE: 0.7557 - val_myAcc: 0.4041 - val_acc: 0.8675
 * Epoch 98/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 2.8101 - orgCE: 0.5422 - myAcc: 0.4300 - acc: 0.0828 - val_loss: 3.9854 - val_orgCE: 0.7887 - val_myAcc: 0.3525 - val_acc: 0.0696
+1160/1160 [==============================] - 58s - loss: 2.5671 - orgCE: 0.5444 - myAcc: 0.4736 - acc: 0.8776 - val_loss: 3.6203 - val_orgCE: 0.7801 - val_myAcc: 0.4042 - val_acc: 0.8230
 * Epoch 99/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 2.7740 - orgCE: 0.5245 - myAcc: 0.4306 - acc: 0.0814 - val_loss: 3.9732 - val_orgCE: 0.7702 - val_myAcc: 0.3552 - val_acc: 0.0686
+1160/1160 [==============================] - 58s - loss: 2.5885 - orgCE: 0.5567 - myAcc: 0.4689 - acc: 0.8572 - val_loss: 3.5597 - val_orgCE: 0.7466 - val_myAcc: 0.3923 - val_acc: 0.8629
 * Epoch 100/100 *
 Train on 1160 samples, validate on 290 samples
 Epoch 1/1
-1160/1160 [==============================] - 57s - loss: 2.8292 - orgCE: 0.5547 - myAcc: 0.4267 - acc: 0.0834 - val_loss: 3.8768 - val_orgCE: 0.7631 - val_myAcc: 0.3469 - val_acc: 0.0678
+1160/1160 [==============================] - 57s - loss: 2.5923 - orgCE: 0.5422 - myAcc: 0.4724 - acc: 0.8734 - val_loss: 3.7391 - val_orgCE: 0.8221 - val_myAcc: 0.3906 - val_acc: 0.8637
