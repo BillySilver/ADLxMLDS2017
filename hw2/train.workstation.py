@@ -12,4 +12,4 @@ if 'tensorflow' == K.backend():
     sess = K.tf.Session(config=config)
     K.set_session(sess)
 
-from model import *
+from model_seq2seq import *
