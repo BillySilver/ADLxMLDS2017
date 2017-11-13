@@ -8,7 +8,10 @@ except:
     outputFileName = 'sample_output_testset.txt'
 
 
+nVocabFeat = len(num2vocab)
+captions, _ = getCaptions()                                                     # cheat.
 instances, video_ids = getInstances()
+labels = getOneHotLabels_RandChoicePerVideo(captions, num_classes=nVocabFeat)   # cheat.
 
 
 model = load_model('models/model.h5', custom_objects={
@@ -18,7 +21,7 @@ model = load_model('models/model.h5', custom_objects={
     'my_categorical_crossentropy': my_categorical_crossentropy,
     'orgCE': orgCE,
     'myAcc': myAcc })
-Y = model.predict(instances)
+Y = model.predict([instances, labels])
 Y = nums2captions(Y)
 with open(outputFileName, 'w') as File:
     for i in range(len(Y)):

@@ -104,7 +104,8 @@ class RecurrentWrapper(Layer):
             self.external_input = None
             self.external_sequence_input = None
         else:
-            self.step_model = _step_model
+            self.step_model = _step_model   # built in RecurrentWrapper.from_config().
+            del _step_model
 
             self.len_external_input = _len_input
             self.len_external_sequence_input = _len_sequence_input
@@ -114,6 +115,24 @@ class RecurrentWrapper(Layer):
             self.final_output_map = _final_output_map
 
             self.external_output = [self.state_output[idx] for idx in self.final_output_map]
+
+            if len(self.state_input) < len(self.state_output):
+                # Modified from part of RecurrentWrapper._build_recurrence_wrapper().
+                # Select from the subset of self.external_output, whose items have no related items in self.state_input.
+                for idx in self.final_output_map:
+                    # Ignore existed (input, output) pairs.
+                    if idx != len(self.state_input):
+                        continue
+                    output = self.state_output[idx]
+
+                    self.state_input.append(self._build_input(output))  # a dummy input to cancel output recurrence in call().
+
+                # Rebuild step_model.
+                inputs = self.step_model.input[ : self.number_of_inputs]
+                self.step_model = Container(
+                    inputs=inputs + self.state_input,
+                    outputs=self.state_output,
+                )
 
         # self.losses = []
         super(RecurrentWrapper, self).__init__(**kwargs)
@@ -133,6 +152,10 @@ class RecurrentWrapper(Layer):
         return self.len_external_input + self.len_external_sequence_input
 
     def compute_output_shape(self, input_shape):
+        # Fixed for multi-inputs.
+        if self.number_of_inputs > 1:
+            input_shape = input_shape[0]
+
         head = tuple(input_shape[:2] if self.return_sequences else input_shape[:1])
 
         def _shape(output):
@@ -274,7 +297,7 @@ class RecurrentWrapper(Layer):
             if output in state_output:
                 continue
 
-            state_input.append(build_input(output))
+            state_input.append(build_input(output))     # a dummy input to cancel output recurrence in call().
             state_output.append(output)
 
         final_output_map = [state_output.index(item) for item in external_output]
