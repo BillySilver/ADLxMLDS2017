@@ -21,6 +21,7 @@ class Layer_BOS_PrevLabels(Layer):
 
 
 # Modified from: https://github.com/chmp/flowly/blob/master/flowly/ml/layers.py#L156
+# Lots of bugfixes (on Keras 2.0.7).
 from keras.engine import InputSpec
 from keras.layers import Layer, Input
 from keras.engine.topology import Container
@@ -47,6 +48,11 @@ class RecurrentWrapper(Layer):
             sequence_input=(),
             stateful=False,
             return_sequences=False,
+            # Fixed.
+            _step_model=None,
+            _len_input=None,
+            _len_sequence_input=None,
+            _final_output_map=None,
             **kwargs
     ):
         if stateful:
@@ -56,22 +62,43 @@ class RecurrentWrapper(Layer):
         self.stateful = stateful
         self.return_sequences = return_sequences
 
-        self.bindings = bind
-        self.external_input = self._ensure_list(input)
-        self.external_sequence_input = self._ensure_list(sequence_input)
-        self.external_output = self._ensure_list(output)
+        # Fixed for load_model.
+        if False == all(x == None for x in [input, output, bind, sequence_input]):
+            self.bindings = bind
+            self.external_input = self._ensure_list(input)
+            self.external_sequence_input = self._ensure_list(sequence_input)
+            self.external_output = self._ensure_list(output)
 
-        self.state_input, self.state_output, self.final_output_map = self._build_recurrence_wrapper(
-            self.external_input + self.external_sequence_input,
-            self.external_output,
-            self.bindings,
-            self._build_input,
-        )
+            self.state_input, self.state_output, self.final_output_map = self._build_recurrence_wrapper(
+                self.external_input + self.external_sequence_input,
+                self.external_output,
+                self.bindings,
+                self._build_input,
+            )
 
-        self.step_model = Container(
-            inputs=self.external_input + self.external_sequence_input + self.state_input,
-            outputs=self.state_output,
-        )
+            self.step_model = Container(
+                inputs=self.external_input + self.external_sequence_input + self.state_input,
+                outputs=self.state_output,
+            )
+
+            # Fixed (extra).
+            self.len_external_input = len(self.external_input)
+            self.len_external_sequence_input = len(self.external_sequence_input)
+            # These have be useless.
+            self.bindings = None
+            self.external_input = None
+            self.external_sequence_input = None
+        else:
+            self.step_model = _step_model
+
+            self.len_external_input = _len_input
+            self.len_external_sequence_input = _len_sequence_input
+
+            self.state_input = self.step_model.input[self.number_of_inputs : ]
+            self.state_output = self.step_model.output
+            self.final_output_map = _final_output_map
+
+            self.external_output = [self.state_output[idx] for idx in self.final_output_map]
 
         # self.losses = []
         super(RecurrentWrapper, self).__init__(**kwargs)
@@ -83,9 +110,12 @@ class RecurrentWrapper(Layer):
             return self.step_model.losses
         return []
 
+    def getIWant(self):
+        return self.state_input, self.state_output, self.final_output_map, self.step_model
+
     @property
     def number_of_inputs(self):
-        return len(self.external_input) + len(self.external_sequence_input)
+        return self.len_external_input + self.len_external_sequence_input
 
     def compute_output_shape(self, input_shape):
         head = tuple(input_shape[:2] if self.return_sequences else input_shape[:1])
@@ -109,7 +139,30 @@ class RecurrentWrapper(Layer):
         pass
 
     def get_config(self):
-        return self.step_model.get_config()
+        # Fixed.
+        config = {'input': None,
+                  'output': None,
+                  'bind': None,
+                  'sequence_input': None,
+                  'stateful': self.stateful,
+                  'return_sequences': self.return_sequences,
+                  '_len_input': self.len_external_input,
+                  '_len_sequence_input': self.len_external_sequence_input,
+                  '_final_output_map': self.final_output_map}
+        step_config = self.step_model.get_config()
+        base_config = super(RecurrentWrapper, self).get_config()
+        return dict(list(base_config.items()) + list(step_config.items()) + list(config.items()))
+        # return self.step_model.get_config()
+
+    # Fixed.
+    @classmethod
+    def from_config(cls, config, custom_objects=None):
+        step_model = Container.from_config(config, custom_objects)
+        config.pop('name')
+        config.pop('layers')
+        config.pop('input_layers')
+        config.pop('output_layers')
+        return cls(_step_model=step_model, **config)
 
     def build(self, input_shape):
         if self.number_of_inputs > 1:
@@ -137,8 +190,8 @@ class RecurrentWrapper(Layer):
         x = self._ensure_list(x)
         initial_states = self.get_initial_states(x)
 
-        recurrent_inputs = x[:len(self.external_input)]
-        sequence_inputs = x[len(self.external_input):]
+        recurrent_inputs = x[:self.len_external_input]
+        sequence_inputs = x[self.len_external_input:]
 
         def step(states, inputs):
             full_input = self._ensure_list(inputs) + sequence_inputs + self._ensure_list(states)
