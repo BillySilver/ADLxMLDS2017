@@ -40,12 +40,11 @@ def __nums2captionsRecur(nums):
 
 
 def getInstances(video_ids=[], peer_review=False):
-    if video_ids is []:
-        with open(dataPath + '/testing_label.json') as file:
-            labelFile = json.load(file)
-
-        for video in labelFile:
-            video_ids += video['id']
+    if video_ids == []:
+        IDPath = '/testing_id.txt' if peer_review is False else '/peer_review_id.txt'
+        with open(dataPath + IDPath) as file:
+            for line in file:
+                video_ids += [ line.strip('\n') ]
 
     instances = []
     featPath  = '/testing_data/feat/' if peer_review is False else '/peer_review/feat/'
@@ -54,7 +53,7 @@ def getInstances(video_ids=[], peer_review=False):
 
     # (nVideo, nFrame, nFeature) = (1450, 80, 4096)
     instances = numpy.array(instances, dtype='float16')
-    return instances
+    return instances, video_ids
 
 
 

@@ -20,6 +20,21 @@ class Layer_BOS_PrevLabels(Layer):
         return _inputs + scatter
 
 
+class Layer_Slicer(Layer):
+    def __init__(self, units, iPart, **kwargs):
+        super(Layer_Slicer, self).__init__(**kwargs)
+        self.units = units
+        self.iPart = iPart
+    def get_config(self):
+        config = {'units': self.units, 'iPart': self.iPart}
+        base_config = super(Layer_Slicer, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))
+    def call(self, inputs):
+        return inputs[:, self.iPart*self.units : (self.iPart+1)*self.units]
+    def compute_output_shape(self, input_shape):
+        return (None, self.units)
+
+
 # Modified from: https://github.com/chmp/flowly/blob/master/flowly/ml/layers.py#L156
 # Lots of bugfixes (on Keras 2.0.7).
 from keras.engine import InputSpec

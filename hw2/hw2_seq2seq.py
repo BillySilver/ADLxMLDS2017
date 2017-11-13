@@ -5,16 +5,10 @@ from keras.models import load_model
 try:
     outputFileName = sys.argv[2]
 except:
-    outputFileName = 'sample_output_special.txt'
+    outputFileName = 'sample_output_testset.txt'
 
 
-test_video_ids = ['klteYv1Uv9A_27_33.avi',
-                  '5YJaS2Eswg0_22_26.avi',
-                  'UbmZAe5u5FI_132_141.avi',
-                  'JntMAcTlOF0_50_70.avi',
-                  'tJHUH9tpqPg_113_118.avi']
-
-instances, _ = getInstances(video_ids=test_video_ids)
+instances, video_ids = getInstances()
 
 
 model = load_model('models/model.h5', custom_objects={
@@ -28,6 +22,23 @@ Y = model.predict(instances)
 Y = nums2captions(Y)
 with open(outputFileName, 'w') as File:
     for i in range(len(Y)):
-        vid     = test_video_ids[i]
+        vid     = video_ids[i]
         caption = ' '.join(Y[i])
         File.write(vid + ',' + caption + '\n')
+
+
+# For peer review. Only avaliable with setted $3.
+try:
+    outputFileName = sys.argv[3]
+
+    instances, video_ids = getInstances(peer_review=True)
+
+    Y = model.predict(instances)
+    Y = nums2captions(Y)
+    with open(outputFileName, 'w') as File:
+        for i in range(len(Y)):
+            vid     = video_ids[i]
+            caption = ' '.join(Y[i])
+            File.write(vid + ',' + caption + '\n')
+except:
+    pass

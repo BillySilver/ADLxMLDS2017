@@ -1,11 +1,11 @@
 from model_init import *
 from keras.models import Model
 from keras.layers import Input
-from keras.layers.core import Dense
+from keras.layers.core import Dense, Activation
 from keras.layers.convolutional import ZeroPadding1D, Cropping1D
 from keras.layers.recurrent import LSTM
 from keras.layers.wrappers import TimeDistributed
-from keras.layers.merge import Concatenate
+from keras.layers.merge import Concatenate, Add, Multiply
 
 
 nVocabFeat = len(num2vocab)
@@ -14,6 +14,8 @@ try:
     from keras.models import load_model
     model = load_model('models/model.h5', custom_objects={
         'Layer_BOS_PrevLabels': Layer_BOS_PrevLabels,
+        'RecurrentWrapper': RecurrentWrapper,
+        'Layer_Slicer': Layer_Slicer,
         'my_categorical_crossentropy': my_categorical_crossentropy,
         'orgCE': orgCE,
         'myAcc': myAcc })
@@ -30,18 +32,50 @@ except:
     #          and of the previous (1) ground truth, or (2) output of Decoder.
     Decoder_ext_in = Input(shape=(1024, ))
     Pred_in        = Input(shape=(nVocabFeat, ))
+    Decoder_int_in = Concatenate(axis=-1)([Decoder_ext_in, Pred_in])
 
-    Decoder_int_in  = Concatenate(axis=-1)([Decoder_ext_in, Pred_in])
-    x               = Dense(units=1024, activation='tanh')(Decoder_int_in)
-    Decoder_ext_out = Dense(units=nVocabFeat, activation='softmax')(x)
+    def myLSTMCell(units, input):
+        h_ = Input(shape=(units, ))
+        c_ = Input(shape=(units, ))
+
+        zf = Dense(units=units, kernel_initializer='glorot_uniform', bias_initializer='ones')(input)
+        z_ = Dense(units=units*3, kernel_initializer='glorot_uniform', bias_initializer='zeros')(input)
+        z0 = Concatenate(axis=-1)([zf, z_])
+        z1 = Dense(units=units*4, kernel_initializer='orthogonal', use_bias=False)(h_)
+        z  = Add()([z0, z1])
+
+        z_f = Layer_Slicer(units=units, iPart=0)(z)
+        z_i = Layer_Slicer(units=units, iPart=1)(z)
+        z_o = Layer_Slicer(units=units, iPart=2)(z)
+        z_c = Layer_Slicer(units=units, iPart=3)(z)
+
+        f = Activation('hard_sigmoid')(z_f)
+        i = Activation('hard_sigmoid')(z_i)
+        o = Activation('hard_sigmoid')(z_o)
+        c = Activation('tanh')(z_c)
+
+        c0 = Multiply()([f, c_])
+        c1 = Multiply()([i, c])
+        c  = Add()([c0, c1])
+
+        h = Activation('tanh')(c)
+        h = Multiply()([o, h])
+
+        return h_, c_, h, c
+
+    h_, c_, h, c    = myLSTMCell(units=1024, input=Decoder_int_in)
+    Decoder_ext_out = Dense(units=nVocabFeat, activation='softmax')(h)
 
     Decoder_in  = Encoder_out
     Decoder_out = RecurrentWrapper(
         input=[Decoder_ext_in],
         output=[Decoder_ext_out],
-        bind={Pred_in: Decoder_ext_out},
+        bind={Pred_in: Decoder_ext_out,
+              h_: h,
+              c_: c},
         input_shape=(None, 1024),
         return_sequences=True,
+        name='Decoder',
     )(Decoder_in)
     Decoder_out = Cropping1D(cropping=(80, 0))(Decoder_out)
 
