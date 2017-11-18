@@ -18,9 +18,10 @@ instances, _ = getInstances(video_ids=test_video_ids)
 
 
 model = load_model('models/model.h5', custom_objects={
-    'Layer_BOS_PrevLabels': Layer_BOS_PrevLabels,
+    'BOSPadding': BOSPadding,
     'RecurrentWrapper': RecurrentWrapper,
-    'Layer_Slicer': Layer_Slicer,
+    'Slicer': Slicer,
+    'ArgmaxOneHot': ArgmaxOneHot,
     'my_categorical_crossentropy': my_categorical_crossentropy,
     'orgCE': orgCE,
     'myAcc': myAcc })

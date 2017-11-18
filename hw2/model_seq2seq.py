@@ -13,9 +13,10 @@ nVocabFeat = len(num2vocab)
 try:
     from keras.models import load_model
     model = load_model('models/model.h5', custom_objects={
-        'Layer_BOS_PrevLabels': Layer_BOS_PrevLabels,
+        'BOSPadding': BOSPadding,
         'RecurrentWrapper': RecurrentWrapper,
-        'Layer_Slicer': Layer_Slicer,
+        'Slicer': Slicer,
+        'ArgmaxOneHot': ArgmaxOneHot,
         'my_categorical_crossentropy': my_categorical_crossentropy,
         'orgCE': orgCE,
         'myAcc': myAcc })
@@ -30,10 +31,6 @@ except:
 
     # Decoder: receives (frames, features) of one video (from Encoder)
     #          and of the previous (1) ground truth, or (2) output of Decoder.
-    Labels_in  = Input(shape=(maxText, nVocabFeat), name='Labels_in')
-    x          = Layer_BOS_PrevLabels(idxBOS=vocab2num['^'])(Labels_in)
-    Labels_pad = ZeroPadding1D(padding=(80, 0), name='Labels_pad')(x)
-
     Decoder_ext_in = Input(shape=(1024, ))
     Pred_in        = Input(shape=(nVocabFeat, ))
     Decoder_int_in = Concatenate(axis=-1)([Decoder_ext_in, Pred_in])
@@ -48,10 +45,10 @@ except:
         z1 = Dense(units=units*4, kernel_initializer='orthogonal', use_bias=False)(h_)
         z  = Add()([z0, z1])
 
-        z_f = Layer_Slicer(units=units, iPart=0)(z)
-        z_i = Layer_Slicer(units=units, iPart=1)(z)
-        z_o = Layer_Slicer(units=units, iPart=2)(z)
-        z_c = Layer_Slicer(units=units, iPart=3)(z)
+        z_f = Slicer(units=units, iPart=0)(z)
+        z_i = Slicer(units=units, iPart=1)(z)
+        z_o = Slicer(units=units, iPart=2)(z)
+        z_c = Slicer(units=units, iPart=3)(z)
 
         f = Activation('hard_sigmoid')(z_f)
         i = Activation('hard_sigmoid')(z_i)
@@ -69,12 +66,14 @@ except:
 
     h_, c_, h, c    = myLSTMCell(units=1024, input=Decoder_int_in)
     Decoder_ext_out = Dense(units=nVocabFeat, activation='softmax')(h)
+    Pred_OneHot     = ArgmaxOneHot()(Decoder_ext_out)
 
-    Decoder_in  = [Encoder_out, Labels_pad]
+    Decoder_in  = Encoder_out
     Decoder_out = RecurrentWrapper(
-        input=[Decoder_ext_in, Pred_in],
+        input=[Decoder_ext_in],
         output=[Decoder_ext_out],
-        bind={h_: h,
+        bind={Pred_in: Pred_OneHot,
+              h_: h,
               c_: c},
         input_shape=(None, 1024),
         return_sequences=True,
@@ -82,7 +81,7 @@ except:
     )(Decoder_in)
     Decoder_out = Cropping1D(cropping=(80, 0))(Decoder_out)
 
-    model = Model(inputs=[Encoder_in, Labels_in], outputs=Decoder_out)
+    model = Model(inputs=Encoder_in, outputs=Decoder_out)
 
     from keras.optimizers import Adam
     myAdam = Adam(decay=0.001)
@@ -96,5 +95,5 @@ epochs = 100
 for t in range(epochs):
     labels = getOneHotLabels_RandChoicePerVideo(captions, num_classes=nVocabFeat)
     print('* Epoch %d/%d *' % (t+1, epochs))
-    model.fit([instances, labels], labels, epochs=1, batch_size=64, validation_split=0.2)
+    model.fit(instances, labels, epochs=1, batch_size=64, validation_split=0.2)
 model.save('models/model.h5')

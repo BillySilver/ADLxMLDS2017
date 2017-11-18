@@ -2,14 +2,14 @@ from keras.engine.topology import Layer
 from keras import backend as K
 
 
-class Layer_BOS_PrevLabels(Layer):
+class BOSPadding(Layer):
     def __init__(self, idxBOS, **kwargs):
-        super(Layer_BOS_PrevLabels, self).__init__(**kwargs)
+        super(BOSPadding, self).__init__(**kwargs)
         self.idxBOS = idxBOS
 
     def get_config(self):
         config = {'idxBOS': self.idxBOS}
-        base_config = super(Layer_BOS_PrevLabels, self).get_config()
+        base_config = super(BOSPadding, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
 
     def call(self, inputs):
@@ -20,19 +20,31 @@ class Layer_BOS_PrevLabels(Layer):
         return _inputs + scatter
 
 
-class Layer_Slicer(Layer):
+class Slicer(Layer):
     def __init__(self, units, iPart, **kwargs):
-        super(Layer_Slicer, self).__init__(**kwargs)
+        super(Slicer, self).__init__(**kwargs)
         self.units = units
         self.iPart = iPart
+
     def get_config(self):
         config = {'units': self.units, 'iPart': self.iPart}
-        base_config = super(Layer_Slicer, self).get_config()
+        base_config = super(Slicer, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
+
     def call(self, inputs):
         return inputs[:, self.iPart*self.units : (self.iPart+1)*self.units]
+
     def compute_output_shape(self, input_shape):
         return (None, self.units)
+
+
+class ArgmaxOneHot(Layer):
+    def __init__(self, **kwargs):
+        super(ArgmaxOneHot, self).__init__(**kwargs)
+
+    def call(self, inputs):
+        classes = K.argmax(inputs, axis=-1)
+        return K.tf.one_hot(classes, depth=inputs.shape.as_list()[-1])
 
 
 # Modified from: https://github.com/chmp/flowly/blob/master/flowly/ml/layers.py#L156
@@ -143,9 +155,6 @@ class RecurrentWrapper(Layer):
         if self.built is True:
             return self.step_model.losses
         return []
-
-    def getIWant(self):
-        return self.state_input, self.state_output, self.final_output_map, self.step_model
 
     @property
     def number_of_inputs(self):
