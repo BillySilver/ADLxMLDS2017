@@ -81,10 +81,7 @@ def getOneHotLabels_RandChoicePerVideo(captions, num_classes):
     for videoCaps in captions:
         idx     = numpy.random.randint(len(videoCaps))
         caption = videoCaps[idx]
-        # labels  += [ np_utils.to_categorical(caption, num_classes=num_classes) ]
-        labels  += [ numpy.concatenate(
-            ( np_utils.to_categorical(caption, num_classes=num_classes),
-              numpy.zeros( (maxText-len(caption), num_classes) ) ),     # Dummy inputs.
-            axis=0
-        ) ]
+        # EOS Padding instead of Zero Padding.
+        Caption = caption + [0] * (maxText - len(caption))
+        labels  += [ np_utils.to_categorical(Caption, num_classes=num_classes) ]
     return numpy.array(labels)

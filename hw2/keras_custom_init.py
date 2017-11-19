@@ -416,7 +416,9 @@ def my_categorical_crossentropy(y_true, y_pred):
 
     # mask = numpy.all(y_true == 0, axis=-1)
     mask = K.tf.count_nonzero(y_true, axis=-1)
-    mask = K.cast(K.tf.where(K.tf.equal(mask, 0), x=K.tf.zeros_like(mask), y=K.tf.ones_like(mask)),
+    mask = K.cast(K.tf.where(K.tf.equal(mask, 0),
+                             x=K.tf.zeros_like(mask),
+                             y=K.tf.ones_like(mask)),
                   K.floatx())
 
     nVal = K.cast(K.tf.count_nonzero(mask), K.floatx())     # #valid_label.
@@ -426,7 +428,9 @@ def my_categorical_crossentropy(y_true, y_pred):
 
 def myAcc(y_true, y_pred):
     mask = K.tf.count_nonzero(y_true, axis=-1)
-    mask = K.cast(K.tf.where(K.tf.equal(mask, 0), x=K.tf.zeros_like(mask), y=K.tf.ones_like(mask)),
+    mask = K.cast(K.tf.where(K.tf.equal(mask, 0),
+                             x=K.tf.zeros_like(mask),
+                             y=K.tf.ones_like(mask)),
                   K.floatx())
 
     nVal = K.cast(K.tf.count_nonzero(mask), K.floatx())     # #valid_label.
