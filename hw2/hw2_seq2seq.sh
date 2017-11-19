@@ -2,8 +2,8 @@ if [ ! -d "models" ]; then
     mkdir models
 fi
 if [ ! -e "models/model.h5" ]; then
-    # wget -O models/model.h5 ''
-    echo 'models/model.h5 not existed!'
+    wget -O models/model.h5 'https://www.dropbox.com/s/c9ldv02gbmb8w40/model08.3.fixPaddingFromLabels.h5?dl=1'
+    # echo 'models/model.h5 not existed!'
 fi
 
 version=$(python -V 2>&1 | grep -Po '(?<=Python )\d')

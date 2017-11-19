@@ -133,6 +133,87 @@ class ScheduleSampling(_Merge):
         return k / (k + K.tf.exp(i/k))
 
 
+class Attention(Layer):
+    def __init__(self, num_focus, **kwargs):
+        super(Attention, self).__init__(**kwargs)
+        self.num_focus = num_focus
+        self.model     = None   # Create when call().
+
+    def get_config(self):
+        config = {'num_focus': self.num_focus}
+        base_config = super(Attention, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))
+
+    def build(self, input_shape):
+        assert len(input_shape) == 3
+        self.input_spec = InputSpec(ndim=3)
+
+        if self.model is None:
+            # Build after call().
+            return
+
+        self._trainable_weights.extend(self.model.trainable_weights)
+        self._non_trainable_weights.extend(self.model.non_trainable_weights)
+
+        self.built = True
+
+    def call(self, inputs):
+        from keras.layers import Input
+        from keras.layers.core import Dense, Activation, Lambda
+        from keras.layers.wrappers import TimeDistributed
+        from keras.layers.merge import Add, Multiply
+
+        sequence = inputs[:, : self.num_focus]
+        contexts = inputs[:, self.num_focus: ]
+
+        sequence_shape = sequence.shape.as_list()
+        num_timesteps  = sequence_shape[1]
+        num_features   = sequence_shape[-1]
+
+        # Bulid. Layers are necessary for RecurrentWrapper to manage '_keras_history'.
+        SourceFrames = Input(shape=(num_timesteps, num_features))
+        state        = Input(shape=(num_features, ))
+        # 1) Calculate score for each timestep.
+        ScoreFrames  = TimeDistributed(Dense(units=1, use_bias=False))(SourceFrames)
+        ScoreState   = Dense(units=1)(state)
+        AttenScores  = Add()([ScoreFrames, ScoreState])         # (samples, timesteps, 1)
+        AttenScores  = Lambda(lambda x: K.squeeze(x, axis=-1),
+                              output_shape=(num_timesteps, )    # (samples, timesteps)
+                       )(AttenScores)
+        #
+        # ScoreFrames  = TimeDistributed(Dense(units=num_features, use_bias=False))(SourceFrames)
+        # AttenScores  = Multiply()([ScoreFrames, state])         # (samples, timesteps, features)
+        # AttenScores  = Lambda(lambda x: K.sum(x, axis=-1),
+        #                       output_shape=(num_timesteps, )
+        #                )(AttenScores)                           # (samples, timesteps)
+        # 2) Apply Softmax to obtain weights of vectors in sequence.
+        AttenWeights = Activation('softmax')(AttenScores)       # Along the last (i.e., timestep) axis.
+        AttenWeights = Lambda(lambda x: K.expand_dims(x, axis=-1),
+                              output_shape=(num_timesteps, 1)   # (samples, timesteps, 1)
+                       )(AttenWeights)
+        # 3) Get weighted sum.
+        AttenContext = Multiply()([AttenWeights, SourceFrames]) # (samples, timesteps, features)
+        AttenContext = Lambda(lambda x: K.sum(x, axis=1),
+                              output_shape=(num_features, )     # (samples, features)
+                       )(AttenContext)
+
+        self.model = RecurrentWrapper(
+            input=[state],
+            output=[AttenContext],
+            bind={},
+            sequence_input=[SourceFrames],
+            input_shape=(None, num_features),
+            return_sequences=True
+        )
+        Atten_in  = [contexts] + [sequence]
+        Atten_out = self.model(Atten_in)
+
+        # Build after call().
+        self.build(tuple(inputs.shape.as_list()))
+
+        return K.concatenate([sequence, Atten_out], axis=1)
+
+
 # Modified from: https://github.com/chmp/flowly/blob/master/flowly/ml/layers.py#L156
 # Lots of bugfixes (on Keras 2.0.7).
 from keras.engine import InputSpec

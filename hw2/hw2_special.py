@@ -25,6 +25,7 @@ model = load_model('models/model.h5', custom_objects={
     'Slicer': Slicer,
     'ArgmaxOneHot': ArgmaxOneHot,
     'ScheduleSampling': ScheduleSampling,
+    'Attention': Attention,
     'my_categorical_crossentropy': my_categorical_crossentropy,
     'orgCE': orgCE,
     'myAcc': myAcc })

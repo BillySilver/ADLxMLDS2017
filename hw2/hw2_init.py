@@ -39,8 +39,9 @@ def __nums2captionsRecur(nums):
     return [ num2vocab[idx] for idx in nums ]
 
 
-def getInstances(video_ids=[], peer_review=False):
-    if video_ids == []:
+def getInstances(video_ids=None, peer_review=False):
+    if video_ids is None:
+        video_ids = []
         IDPath = '/testing_id.txt' if peer_review is False else '/peer_review_id.txt'
         with open(dataPath + IDPath) as file:
             for line in file:

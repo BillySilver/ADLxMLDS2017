@@ -18,6 +18,7 @@ try:
         'Slicer': Slicer,
         'ArgmaxOneHot': ArgmaxOneHot,
         'ScheduleSampling': ScheduleSampling,
+        'Attention': Attention,
         'my_categorical_crossentropy': my_categorical_crossentropy,
         'orgCE': orgCE,
         'myAcc': myAcc })

@@ -19,6 +19,7 @@ model = load_model('models/model.h5', custom_objects={
     'Slicer': Slicer,
     'ArgmaxOneHot': ArgmaxOneHot,
     'ScheduleSampling': ScheduleSampling,
+    'Attention': Attention,
     'my_categorical_crossentropy': my_categorical_crossentropy,
     'orgCE': orgCE,
     'myAcc': myAcc })
@@ -31,7 +32,7 @@ with open(outputFileName, 'w') as File:
         File.write(vid + ',' + caption + '\n')
 
 
-# For peer review. Only avaliable with setted $3.
+# For peer review. Only avaliable with set $3.
 try:
     outputFileName = sys.argv[3]
 
