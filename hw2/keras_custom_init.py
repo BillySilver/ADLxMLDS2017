@@ -47,6 +47,92 @@ class ArgmaxOneHot(Layer):
         return K.tf.one_hot(classes, depth=inputs.shape.as_list()[-1])
 
 
+from keras.layers.merge import _Merge
+class ScheduleSampling(_Merge):
+    def __init__(self, decay_param, **kwargs):
+        with K.name_scope(self.__class__.__name__):
+            self.iterations  = K.variable(0, dtype='int64', name='iterations')
+            self.decay_param = K.constant(decay_param, name='decay_param')
+        super(ScheduleSampling, self).__init__(**kwargs)
+        self.uses_learning_phase = True
+
+    def build(self, input_shape):
+        super(ScheduleSampling, self).build(input_shape)
+        self._non_trainable_weights += [ self.iterations ]
+        self.built = True
+
+    def get_config(self):
+        config = {'decay_param': float(K.get_value(self.decay_param))}
+        base_config = super(ScheduleSampling, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))
+
+    def _merge_function(self, inputs):
+        if len(inputs) != 2:
+            raise ValueError('`ScheduleSampling` layer should be called '
+                             'on exactly 2 inputs')
+        if inputs[0].shape.as_list() != inputs[1].shape.as_list():
+            raise ValueError('`ScheduleSampling` layer should be called '
+                             'on inputs of the same shape')
+
+        training = self.training
+        y_pred, y_true = inputs
+
+        # Prepare mixed predictions.
+        shape   = y_pred.shape.as_list()
+        tfShape = K.shape(y_pred)
+        # Find zero-vectors in y_true and give thme the mask value 1.
+        zero_mask = K.tf.count_nonzero(y_true, axis=-1)
+        zero_mask = K.cast(K.tf.where(K.tf.equal(zero_mask, 0),
+                                      x=K.tf.ones_like(zero_mask),
+                                      y=K.tf.zeros_like(zero_mask)),
+                           K.floatx())
+        # Find BOS-vectors in y_true and give thme the mask value 1.
+        # Note that argmax(BOS) = 1. Check model_init.py.
+        BOS_mask = K.argmax(y_true, axis=-1)
+        BOS_mask = K.cast(K.tf.where(K.tf.equal(BOS_mask, 1),
+                                     x=K.tf.ones_like(BOS_mask),
+                                     y=K.tf.zeros_like(BOS_mask)),
+                          K.floatx())
+        # Aggregate extra masks.
+        # Cover y_pred with zero and BOS vectors in y_true.
+        # IMPORTANT: This works at testing phase!
+        # Even though at training phase, they must be chosen.
+        # This is meaningful for using padding.
+        extra_mask = zero_mask + BOS_mask
+        extra_mask = K.expand_dims(extra_mask, axis=-1)
+        extra_mask = K.repeat_elements(extra_mask, shape[-1], axis=len(shape)-1)
+        y_pred     = K.tf.where(K.tf.equal(extra_mask, 0),
+                                x=y_pred,
+                                y=y_true)
+
+        mask   = K.random_uniform(shape=tfShape[ :-1], minval=0.0, maxval=1.0)
+        mask   = K.expand_dims(mask, axis=-1)
+        # mask   = K.repeat_elements(mask, shape[-1], axis=-1)      # fails on workstation GPU but works on CPU.
+        mask   = K.repeat_elements(mask, shape[-1], axis=len(shape)-1)
+        y_samp = K.tf.where(K.tf.greater(mask, self.threshold),
+                            x=y_pred,
+                            y=y_true)
+
+        self.add_update(K.update_add(self.iterations,
+                                     K.cast(K.in_train_phase(1, 0, training=training),
+                                            dtype='int64')),
+                        inputs)
+
+        return K.in_train_phase(y_samp, y_pred, training=training)
+
+    def call(self, inputs, training=None):
+        self.training = training
+        return super(ScheduleSampling, self).call(inputs)
+
+    @property
+    def threshold(self):
+        # Inverse sigmoid decay.
+        # When i = k*log(k), threshold = 0.5.
+        k = self.decay_param
+        i = K.cast(self.iterations, K.floatx())
+        return k / (k + K.tf.exp(i/k))
+
+
 # Modified from: https://github.com/chmp/flowly/blob/master/flowly/ml/layers.py#L156
 # Lots of bugfixes (on Keras 2.0.7).
 from keras.engine import InputSpec
@@ -88,6 +174,7 @@ class RecurrentWrapper(Layer):
         self.supports_masking = True
         self.stateful = stateful
         self.return_sequences = return_sequences
+        self.uses_learning_phase = True    # for Dropout, BatchNormalization, ScheduleSampling.
 
         # Fixed for load_model.
         if False == all(x == None for x in [input, output, bind, sequence_input]):

@@ -60,54 +60,8 @@ def getInstances(video_ids=[], peer_review=False):
 """Other functions for convenience
 """
 
-def getCaptions(video_ids=None):
-    with open(dataPath + '/testing_label.json') as file:
-        labelFile = json.load(file)
-
-    minText   = 1000
-    maxText   = 0
-    captions  = []
-    for video in labelFile:
-        vid = video['id']
-        if video_ids is not None and vid not in video_ids:
-            continue
-        captions += [ [] ]
-        for caption in video['caption']:
-            texts   = re.findall(r'\w.*?(?=[^\w]*\s|[^\w]*$)', caption)
-            nText   = len(texts)
-            minText = min(minText, nText)
-            maxText = max(maxText, nText)
-
-            try:
-                # To ignore caption which contains a word not in vocabulary.
-                texts = [ vocab2num[text.lower()] for text in texts ] + [0]
-                captions[-1] += [ texts ]
-            except:
-                pass
-
-    return captions, maxText+1
-
-# from model_init import getOneHotLabels_RandChoicePerVideo
-def getOneHotLabels_RandChoicePerVideo(captions, num_classes):
-    from keras.utils import np_utils
-    maxText = 41
-    """choice one caption (list of ints) from caption candidates ramdomly for each video.
-
-    Arguments:
-        captions {list} -- contains captions (list) of videos.
-        num_classes {int} -- vocabulary size.
-
-    Returns:
-        numpy.darray -- one-hot vectors. shape = (#sample, #max_timestep, #feature)
-    """
-    labels = []
-    for videoCaps in captions:
-        idx     = numpy.random.randint(len(videoCaps))
-        caption = videoCaps[idx]
-        # labels  += [ np_utils.to_categorical(caption, num_classes=num_classes) ]
-        labels  += [ numpy.concatenate(
-            ( np_utils.to_categorical(caption, num_classes=num_classes),
-              numpy.zeros( (maxText-len(caption), num_classes) ) ),     # Dummy inputs.
-            axis=0
-        ) ]
-    return numpy.array(labels)
+def getOneHotLabels_Fake(num_samples, maxText, num_classes):
+    idxBOS = vocab2num['^']
+    fake_labels = numpy.ones(shape=(num_samples, maxText, num_classes))
+    fake_labels[ : , : , 0 : idxBOS+1] = 0
+    return fake_labels

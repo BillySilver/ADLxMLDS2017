@@ -8,7 +8,9 @@ except:
     outputFileName = 'sample_output_testset.txt'
 
 
+nVocabFeat = len(num2vocab)
 instances, video_ids = getInstances()
+fake_labels = getOneHotLabels_Fake(len(instances), maxText=41, num_classes=nVocabFeat)
 
 
 model = load_model('models/model.h5', custom_objects={
@@ -16,10 +18,11 @@ model = load_model('models/model.h5', custom_objects={
     'RecurrentWrapper': RecurrentWrapper,
     'Slicer': Slicer,
     'ArgmaxOneHot': ArgmaxOneHot,
+    'ScheduleSampling': ScheduleSampling,
     'my_categorical_crossentropy': my_categorical_crossentropy,
     'orgCE': orgCE,
     'myAcc': myAcc })
-Y = model.predict(instances)
+Y = model.predict([instances, fake_labels])
 Y = nums2captions(Y)
 with open(outputFileName, 'w') as File:
     for i in range(len(Y)):
@@ -33,8 +36,9 @@ try:
     outputFileName = sys.argv[3]
 
     instances, video_ids = getInstances(peer_review=True)
+    fake_labels = getOneHotLabels_Fake(len(instances), maxText=41, num_classes=nVocabFeat)
 
-    Y = model.predict(instances)
+    Y = model.predict([instances, fake_labels])
     Y = nums2captions(Y)
     with open(outputFileName, 'w') as File:
         for i in range(len(Y)):
