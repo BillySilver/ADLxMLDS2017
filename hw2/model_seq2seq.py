@@ -97,8 +97,8 @@ except:
                        )(AttenContext)
         return SourceFrames, AttenContext
 
-    # Using the hidden state of Decoder LSTM.
-    Atten_seq_in, Atten_out = AttetionWrapper(num_timesteps=80, num_features=1024, state=h_)
+    # Using the cell state of Decoder LSTM.
+    Atten_seq_in, Atten_out = AttetionWrapper(num_timesteps=80, num_features=1024, state=c_)
 
     # [recurrent_inputs] + [sequence_inputs]
     Decoder_in  = [Labels_pad] + [Encoder_out]
