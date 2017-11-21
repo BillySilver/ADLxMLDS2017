@@ -483,7 +483,11 @@ class RecurrentWrapper(Layer):
 
     @staticmethod
     def _build_input(output):
-        return Input(output.shape[1:], dtype=output.dtype)
+        # Fixed the bug of duplicate names for other Input layers when loading model.
+        # return Input(output.shape[1:], dtype=output.dtype)
+        prefix = 'input_padding_in_recurrent_wrapper'
+        name = prefix + '_' + str(K.get_uid(prefix))
+        return Input(output.shape[1:], dtype=output.dtype, name=name)
 
 
 def orgCE(y_true, y_pred):
