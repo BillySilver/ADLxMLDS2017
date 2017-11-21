@@ -1,7 +1,7 @@
 from model_init import *
 from keras.models import Model
 from keras.layers import Input
-from keras.layers.core import Dense, Activation
+from keras.layers.core import Dense, Activation, Lambda
 from keras.layers.convolutional import ZeroPadding1D, Cropping1D
 from keras.layers.recurrent import LSTM
 from keras.layers.wrappers import TimeDistributed
@@ -28,14 +28,12 @@ except:
 
     # Encoder: receives (frames, features) of one video.
     Encoder_in  = Input(shape=(80, 4096), name='Encoder_in')
-    x           = ZeroPadding1D(padding=(0, maxText))(Encoder_in)
-    Encoder_out = LSTM(units=1024, implementation=2, return_sequences=True, name='Encoder_out')(x)
+    Encoder_out = LSTM(units=1024, implementation=2, return_sequences=True, name='Encoder_out')(Encoder_in)
 
     # Decoder: receives (frames, features) of one video (from Encoder)
     #          and of the previous (1) ground truth, or (2) output of Decoder.
     Labels_in  = Input(shape=(maxText, nVocabFeat), name='Labels_in')
-    x          = BOSPadding(idxBOS=vocab2num['^'])(Labels_in)
-    Labels_pad = ZeroPadding1D(padding=(80, 0), name='Labels_pad')(x)
+    Labels_pad = BOSPadding(idxBOS=vocab2num['^'])(Labels_in)
 
     Decoder_ext_in = Input(shape=(1024, ))
     Pred_in        = Input(shape=(nVocabFeat, ))
@@ -76,18 +74,46 @@ except:
     Decoder_ext_out = Dense(units=nVocabFeat, activation='softmax')(h)
     Pred_OneHot     = ArgmaxOneHot()(Decoder_ext_out)
 
-    Decoder_in  = [Encoder_out, Labels_pad]
+    # Attention-based layer.
+    def AttetionWrapper(num_timesteps, num_features, state):
+        SourceFrames = Input(shape=(num_timesteps, num_features))
+        # 1) Calculate score for each timestep.
+        ScoreFrames  = TimeDistributed(Dense(units=1, use_bias=False))(SourceFrames)
+        ScoreState   = Dense(units=1)(state)
+        AttenScores  = Add()([ScoreFrames, ScoreState])         # (samples, timesteps, 1)
+        AttenScores  = Lambda(lambda x: K.squeeze(x, axis=-1),
+                              output_shape=(num_timesteps, )    # (samples, timesteps)
+                       )(AttenScores)
+        # 2) Apply Softmax to obtain weights of vectors in sequence.
+        # AttenWeights = Activation('tanh')(AttenScores)
+        AttenWeights = Activation('softmax')(AttenScores)       # Along the last (i.e., timestep) axis.
+        AttenWeights = Lambda(lambda x: K.expand_dims(x, axis=-1),
+                              output_shape=(num_timesteps, 1)   # (samples, timesteps, 1)
+                       )(AttenWeights)
+        # 3) Get weighted sum.
+        AttenContext = Multiply()([AttenWeights, SourceFrames]) # (samples, timesteps, features)
+        AttenContext = Lambda(lambda x: K.sum(x, axis=1),
+                              output_shape=(num_features, )     # (samples, features)
+                       )(AttenContext)
+        return SourceFrames, AttenContext
+
+    # Using the hidden state of Decoder LSTM.
+    Atten_seq_in, Atten_out = AttetionWrapper(num_timesteps=80, num_features=1024, state=h_)
+
+    # [recurrent_inputs] + [sequence_inputs]
+    Decoder_in  = [Labels_pad] + [Encoder_out]
     Decoder_out = RecurrentWrapper(
-        input=[Decoder_ext_in, Label_in],
+        input=[Label_in],
         output=[Decoder_ext_out],
-        bind={Pred_in: Pred_OneHot,
+        bind={Decoder_ext_in: Atten_out,
+              Pred_in: Pred_OneHot,
               h_: h,
               c_: c},
+        sequence_input=[Atten_seq_in],
         input_shape=(None, 1024),
         return_sequences=True,
         name='Decoder',
     )(Decoder_in)
-    Decoder_out = Cropping1D(cropping=(80, 0))(Decoder_out)
 
     model = Model(inputs=[Encoder_in, Labels_in], outputs=Decoder_out)
 
