@@ -60,7 +60,7 @@ class Environment(object):
             observation: np.array
                 current RGB screen of game, shape: (210, 160, 3)
             reward: int
-                if opponent wins, reward = +1 else -1
+                if opponent wins, reward = -1 else +1
             done: bool
                 whether reach the end of the episode?
         '''
