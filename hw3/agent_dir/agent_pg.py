@@ -193,16 +193,16 @@ class Agent_PG(Agent):
         if True:
             # https://github.com/keon/policy-gradient/blob/master/pg.py
             x = Convolution2D(filters=32, kernel_size=(6, 6), strides=3,
-                               activation='relu', padding='same', kernel_initializer='he_uniform')(OB)
+                              activation='relu', padding='same', kernel_initializer='he_uniform')(OB)
             x = Flatten()(x)
             x = Dense(units=64, activation='relu', kernel_initializer='he_uniform')(x)
             x = Dense(units=32, activation='relu', kernel_initializer='he_uniform')(x)
         else:
             # https://github.com/coreylynch/async-rl/blob/master/model.py
             x = Convolution2D(filters=16, kernel_size=(8, 8), strides=4,
-                               activation='relu', padding='same', kernel_initializer='he_uniform')(OB)
+                              activation='relu', padding='same', kernel_initializer='he_uniform')(OB)
             x = Convolution2D(filters=32, kernel_size=(4, 4), strides=2,
-                               activation='relu', padding='same', kernel_initializer='he_uniform')(x)
+                              activation='relu', padding='same', kernel_initializer='he_uniform')(x)
             x = Flatten()(x)
             x = Dense(units=128, activation='relu', kernel_initializer='he_uniform')(x)
             # Additional.

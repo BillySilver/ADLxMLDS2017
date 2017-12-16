@@ -167,7 +167,7 @@ class Agent_DQN(Agent):
             # https://github.com/keon/policy-gradient/blob/master/pg.py
             # ~ 31 ms/step.
             x = Convolution2D(filters=32, kernel_size=(6, 6), strides=3,
-                               activation='relu', padding='same', kernel_initializer='he_uniform')(OB)
+                              activation='relu', padding='same', kernel_initializer='he_uniform')(OB)
             x = Flatten()(x)
             x = Dense(units=64, activation='relu', kernel_initializer='he_uniform')(x)
             x = Dense(units=32, activation='relu', kernel_initializer='he_uniform')(x)
@@ -175,11 +175,11 @@ class Agent_DQN(Agent):
             # https://github.com/tokb23/dqn/blob/master/dqn.py
             # ~ 53 ms/step.
             x = Convolution2D(filters=32, kernel_size=(8, 8), strides=4,
-                               activation='relu', padding='same', kernel_initializer='he_uniform')(OB)
+                              activation='relu', padding='same', kernel_initializer='he_uniform')(OB)
             x = Convolution2D(filters=64, kernel_size=(4, 4), strides=2,
-                               activation='relu', padding='same', kernel_initializer='he_uniform')(x)
+                              activation='relu', padding='same', kernel_initializer='he_uniform')(x)
             x = Convolution2D(filters=64, kernel_size=(3, 3), strides=1,
-                               activation='relu', padding='same', kernel_initializer='he_uniform')(x)
+                              activation='relu', padding='same', kernel_initializer='he_uniform')(x)
             x = Flatten()(x)
             x = Dense(units=512, kernel_initializer='he_uniform')(x)
             x = LeakyReLU(alpha=0.1)(x)
