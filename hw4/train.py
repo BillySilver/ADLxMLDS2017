@@ -66,16 +66,16 @@ for i_epoch in range(epochs):
         percent    = float(batch_end) / valid_img_ids.size
         eta        = epoch_time / percent * (1. - percent)
         if batch_beg != 0:
-            sys.stdout.write("\033[F")  # back to previous line.
-            sys.stdout.write("\033[K")  # clear line.
+            sys.stdout.write('\033[F')  # back to previous line.
+            sys.stdout.write('\033[K')  # clear line.
         print('%d/%d - ETA: %ds' % (batch_end, valid_img_ids.size, eta), end='')
         print(' - loss_G: %.4f' % np.mean(losses_G), end='')
         print(' - loss_D: %.4f' % np.mean(losses_D), end='')
         print('', flush=True)
 
     epoch_time = time.time() - epoch_beg_time
-    sys.stdout.write("\033[F")  # back to previous line.
-    sys.stdout.write("\033[K")  # clear line.
+    sys.stdout.write('\033[F')  # back to previous line.
+    sys.stdout.write('\033[K')  # clear line.
     print('%d/%d - %ds' % (valid_img_ids.size, valid_img_ids.size, epoch_time), end='')
     print(' - loss_G: %.4f' % np.mean(losses_G), end='')
     print(' - loss_D: %.4f' % np.mean(losses_D), end='')

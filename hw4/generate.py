@@ -10,6 +10,7 @@ except:
     testingTextPath = 'data/sample_testing_text.txt'
 
 num_gene_imgs_per_text = 5
+np.random.seed(1337)     # To guarantee the results can be reproduced.
 
 
 G = Generator(img_shape, cond_dim=cond_dim, noise_dim=noise_dim)
