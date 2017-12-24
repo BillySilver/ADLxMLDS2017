@@ -1,5 +1,6 @@
 from model_setup import *
 from train_init import *
+import sys
 import time
 import numpy as np
 
@@ -50,14 +51,13 @@ for i_epoch in range(epochs):
         ONES_ptr = ONES if batch_ids.size == batch_size else ONES_RES
 
         # Train D.
-        D.trainable = True
-        fake_imgs = G.predict([batch_noise, batch_right_cond_vecs])
-        loss_D = iwd.train_on_batch(x=[batch_imgs, fake_imgs, batch_right_cond_vecs, batch_wrong_cond_vecs],
-                                    y=[ONES_ptr, ONES_ptr, ONES_ptr])
-        losses_D += [ loss_D[0] ]
+        for _ in range(1):
+            fake_imgs = G.predict([batch_noise, batch_right_cond_vecs])
+            loss_D = iwd.train_on_batch(x=[batch_imgs, fake_imgs, batch_right_cond_vecs, batch_wrong_cond_vecs],
+                                        y=[ONES_ptr, ONES_ptr, ONES_ptr])
+            losses_D += [ loss_D[0] ]   # sum of weighted loss.
 
         # Train G.
-        D.trainable = False
         loss_G = gan.train_on_batch(x=[batch_noise, batch_right_cond_vecs], y=ONES_ptr)
         losses_G += [ loss_G ]
 
@@ -65,15 +65,21 @@ for i_epoch in range(epochs):
         epoch_time = time.time() - epoch_beg_time
         percent    = float(batch_end) / valid_img_ids.size
         eta        = epoch_time / percent * (1. - percent)
+        if batch_beg != 0:
+            sys.stdout.write("\033[F")  # back to previous line.
+            sys.stdout.write("\033[K")  # clear line.
         print('%d/%d - ETA: %ds' % (batch_end, valid_img_ids.size, eta), end='')
         print(' - loss_G: %.4f' % np.mean(losses_G), end='')
         print(' - loss_D: %.4f' % np.mean(losses_D), end='')
-        print('', end='\r', flush=True)
+        print('', flush=True)
 
     epoch_time = time.time() - epoch_beg_time
+    sys.stdout.write("\033[F")  # back to previous line.
+    sys.stdout.write("\033[K")  # clear line.
     print('%d/%d - %ds' % (valid_img_ids.size, valid_img_ids.size, epoch_time), end='')
     print(' - loss_G: %.4f' % np.mean(losses_G), end='')
-    print(' - loss_D: %.4f' % np.mean(losses_D), flush=True)
+    print(' - loss_D: %.4f' % np.mean(losses_D), end='')
+    print('', flush=True)
 
     G.save_weights('models/Generator.h5')
     D.save_weights('models/Discriminator.h5')

@@ -1,4 +1,6 @@
+# text-to-image
 # https://arxiv.org/pdf/1605.05396.pdf
+# https://github.com/paarthneekhara/text-to-image
 
 from keras import backend as K
 from keras.models import Model
@@ -13,24 +15,19 @@ from keras.optimizers import Adam
 import numpy as np
 
 
-LReLU_alpha = 0.1
+LReLU_alpha = 0.3
 K.set_image_data_format('channels_last')
 myOpt = Adam(lr=1e-4, beta_1=0.5, beta_2=0.9)
 
 
-def _Descriptor(cond_dim=2400, name=None, useReLU=False):
-    hidden_cond_dim = 2**int(np.log(cond_dim) / np.log(2))
+def _Descriptor(cond_dim=2400, name=None):
+    hidden_cond_dim = 256
 
     # Condition, a.k.a. Description.
     cond = Input(shape=(cond_dim, ), name=name)
     hidden_cond = cond
-    while hidden_cond_dim > 128:
-        hidden_cond_dim //= 4
-        hidden_cond = Dense(units=hidden_cond_dim)(hidden_cond)
-        if not useReLU:
-            hidden_cond = LeakyReLU(alpha=LReLU_alpha)(hidden_cond)
-        else:
-            hidden_cond = Activation('relu')(hidden_cond)
+    hidden_cond = Dense(units=hidden_cond_dim)(hidden_cond)
+    hidden_cond = LeakyReLU(alpha=LReLU_alpha)(hidden_cond)
 
     return cond, hidden_cond, hidden_cond_dim
 
@@ -41,8 +38,7 @@ def Generator(img_shape, cond_dim=2400, noise_dim=128):
                             strides=strides, padding=padding,
                             kernel_initializer='he_uniform')(x)
         if not isLast:
-            x = BatchNormalization()(x)
-            x = LeakyReLU(alpha=LReLU_alpha)(x)
+            x = Activation('relu')(x)
         return x
 
     cond, out_cond, out_cond_dim = _Descriptor(cond_dim, name='CONDITION_for_G')
@@ -68,31 +64,29 @@ def Generator(img_shape, cond_dim=2400, noise_dim=128):
     """
 
     x = Concatenate(axis=-1, name='CONCAT_for_G')([noise, out_cond])
-    x = Reshape(target_shape=(1, 1, -1))(x)
 
-    # x = recur_build_deconv2d(x, n_row, n_col, noise_dim+out_cond_dim)
-    x = Deconv2DBlock(x, filters=1024, kernel_size=(4, 4),
-                      strides=(1, 1), padding='valid')
+    x = Dense(units=4 * 4 * 512, kernel_initializer='he_uniform')(x)
+    x = Activation('relu')(x)
+    x = Reshape(target_shape=(4, 4, -1))(x)
 
-    x = Deconv2DBlock(x, filters=512, kernel_size=(5, 5),   # (8, 8, 512)
+    x = Deconv2DBlock(x, filters=256, kernel_size=(5, 5),   # (8, 8, 256)
                       strides=(2, 2))
-    x = Deconv2DBlock(x, filters=256, kernel_size=(5, 5),   # (16, 16, 256)
+    x = Deconv2DBlock(x, filters=128, kernel_size=(5, 5),   # (16, 16, 128)
                       strides=(2, 2))
-    x = Deconv2DBlock(x, filters=128, kernel_size=(5, 5),   # (32, 32, 128)
-                      strides=(2, 2))
-    x = Deconv2DBlock(x, filters=64, kernel_size=(5, 5),    # (64, 64, 64)
+    x = Deconv2DBlock(x, filters=64, kernel_size=(5, 5),    # (32, 32, 64)
                       strides=(2, 2))
 
     x = Deconv2DBlock(x, filters=img_shape[-1], kernel_size=(5, 5), # (64, 64, 3)
-                      strides=(1, 1), isLast=True)
-    G = Activation('sigmoid', name='GENERATOR_OUTPUT')(x)
+                      strides=(2, 2), isLast=True)
+    G = Activation('tanh')(x)
+    G = Lambda(lambda x: x / 2. + 0.5, name='GENERATOR_OUTPUT')(G)  # wider sigmoid.
 
     model = Model(inputs=[noise, cond], outputs=G)
     return model
 
 
 def Discriminator(img_shape, cond_dim=2400):
-    cond, out_cond, out_cond_dim = _Descriptor(cond_dim, name='CONDITION_for_D', useReLU=True)
+    cond, out_cond, out_cond_dim = _Descriptor(cond_dim, name='CONDITION_for_D')
     n_row     = img_shape[0]
     n_col     = img_shape[1]
     n_channel = 64
@@ -112,20 +106,19 @@ def Discriminator(img_shape, cond_dim=2400):
         x = LeakyReLU(alpha=LReLU_alpha)(x)
         n_row //= step_row
         n_col //= step_col
+        n_channel_prev = n_channel
         n_channel *= 2 if (step_row * step_col == 4) else 1
 
-    extracted_img = Conv2D(filters=out_cond_dim, kernel_size=(1, 1),
-                           kernel_initializer='he_uniform', name='EXTRACTED_IMAGE')(x)
+    extracted_img = Lambda(lambda x: x, name='EXTRACTED_IMAGE')(x)  # do nothing.
 
     rep_cond = RepeatVector(n_row * n_col)(out_cond)
     rep_cond = Reshape(target_shape=(n_row, n_col, -1))(rep_cond)
-    x        = Concatenate(axis=-1, name='CONCAT_for_D')([extracted_img, rep_cond])
+    x        = Concatenate(axis=-1, name='CONCAT_for_D')([extracted_img, rep_cond]) # (4, 4, 512+256)
 
-    x = Conv2D(filters=2*out_cond_dim, kernel_size=(1, 1),
-               activation='relu',
+    x = Conv2D(filters=n_channel_prev, kernel_size=(1, 1),
                kernel_initializer='he_uniform')(x)
+    x = LeakyReLU(alpha=LReLU_alpha)(x)
     x = Flatten()(x)
-    x = Dense(units=256, activation='relu')(x)
     D = Dense(units=1, name='DISCRIMINATOR_OUTPUT')(x)
 
     model = Model(inputs=[img, cond], outputs=D)
@@ -140,6 +133,7 @@ def GAN(G, D, cond_dim=2400, noise_dim=128):
     D_out = D([G_out, cond])
 
     model = Model(inputs=[noise, cond], outputs=D_out)
+    D.trainable = False
     model.compile(loss=loss_for_G, optimizer=myOpt)
     return model
 
@@ -164,6 +158,7 @@ def iW_D(D, img_shape, cond_dim=2400, lmbd=10.):
     gradnorm2  = GradNorm()([penalty2, real_img, fuzzy_cond])
 
     model = Model(inputs=[real_img, fake_img, right_cond, wrong_cond], outputs=[score, gradnorm1, gradnorm2])
+    D.trainable = True
     model.compile(loss=[loss_for_D, 'mse', 'mse'], optimizer=myOpt, loss_weights=[1.0, lmbd/2., lmbd/2.])
     return model
 
