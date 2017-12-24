@@ -22,8 +22,8 @@ D   = Discriminator(img_shape, cond_dim=cond_dim)
 gan = GAN(G, D, cond_dim=cond_dim, noise_dim=noise_dim)
 iwd = iW_D(D, img_shape, cond_dim=cond_dim, lmbd=10.)
 try:
-    G.load_weights('models/Generator.h5')
-    D.load_weights('models/Discriminator.h5')
+    G.load_weights(model_path('Generator'))
+    D.load_weights(model_path('Discriminator'))
     print('\n* Has loaded existed model. *\n')
 except:
     G.summary()
@@ -81,5 +81,5 @@ for i_epoch in range(epochs):
     print(' - loss_D: %.4f' % np.mean(losses_D), end='')
     print('', flush=True)
 
-    G.save_weights('models/Generator.h5')
-    D.save_weights('models/Discriminator.h5')
+    G.save_weights(model_path('Generator'))
+    D.save_weights(model_path('Discriminator'))

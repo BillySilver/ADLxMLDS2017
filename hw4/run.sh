@@ -7,4 +7,4 @@ if [ ! -e "models/Generator.h5" ]; then
 fi
 
 PYTHON=python3.5
-$PYTHON generate.py $1
+$PYTHON generate.py "$@"
