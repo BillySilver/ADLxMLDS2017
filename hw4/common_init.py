@@ -21,6 +21,7 @@ with open('models/hair_eyes_vec.txt') as file:
     for cond in file:
         cond = cond.strip()
         cond_vec_ids[cond] = cond_id
+        cond_id += 1
 
 img_shape = (64, 64, 3)
 cond_dim  = cond_vecs.shape[-1]

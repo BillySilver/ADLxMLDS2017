@@ -59,11 +59,11 @@ def convert_attrs_to_cond_vecs(img_ids):
 
         right_cond     = ' '.join(right_attrs)
         right_cond_id  = cond_vec_ids[right_cond]
-        right_cond_ids += [ cond_id ]
+        right_cond_ids += [ right_cond_id ]
 
         wrong_cond     = ' '.join(wrong_attrs)
         wrong_cond_id  = cond_vec_ids[wrong_cond]
-        wrong_cond_ids += [ cond_id ]
+        wrong_cond_ids += [ wrong_cond_id ]
 
     right_cond_ids = np.array(right_cond_ids)
     wrong_cond_ids = np.array(wrong_cond_ids)
