@@ -26,6 +26,9 @@ img_shape = (64, 64, 3)
 cond_dim  = cond_vecs.shape[-1]
 noise_dim = 128
 
+def CommonNoiseGenerator(size):
+    return np.random.uniform(-1., 1., size=size)
+
 
 """
 This part is for convenience to specify one of several models if you'd like to train with different settings.

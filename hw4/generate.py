@@ -28,7 +28,7 @@ with open(args.testing_text) as file:
         cond_vec = cond_vecs[cond_id]
         cond_vec = np.tile(cond_vec, (num_gene_imgs_per_text, 1))
 
-        noises    = np.random.uniform(-1., 1., size=(num_gene_imgs_per_text, noise_dim))
+        noises    = CommonNoiseGenerator(size=(num_gene_imgs_per_text, noise_dim))
         gene_imgs = G.predict([noises, cond_vec])
         for i in range(num_gene_imgs_per_text):
             scipy.misc.imsave('samples/sample_%d_%d.jpg' % (text_id, i+1), gene_imgs[i])

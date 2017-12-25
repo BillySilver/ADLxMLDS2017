@@ -43,21 +43,22 @@ for i_epoch in range(epochs):
 
     np.random.shuffle(valid_img_ids)
     for batch_beg in range(0, valid_img_ids.size, batch_size):
-        batch_ids   = valid_img_ids[batch_beg : batch_beg+batch_size]
-        batch_imgs  = real_imgs[batch_ids]
-        batch_noise = np.random.uniform(-1., 1., size=(batch_ids.size, noise_dim))
+        batch_ids  = valid_img_ids[batch_beg : batch_beg+batch_size]
+        batch_imgs = real_imgs[batch_ids]
         batch_right_cond_vecs, batch_wrong_cond_vecs = convert_attrs_to_cond_vecs(batch_ids)
 
         ONES_ptr = ONES if batch_ids.size == batch_size else ONES_RES
 
         # Train D.
         for _ in range(1):
+            batch_noise = CommonNoiseGenerator(size=(batch_ids.size, noise_dim))
             fake_imgs = G.predict([batch_noise, batch_right_cond_vecs])
             loss_D = iwd.train_on_batch(x=[batch_imgs, fake_imgs, batch_right_cond_vecs, batch_wrong_cond_vecs],
                                         y=[ONES_ptr, ONES_ptr, ONES_ptr])
             losses_D += [ loss_D[0] ]   # sum of weighted loss.
 
         # Train G.
+        batch_noise = CommonNoiseGenerator(size=(batch_ids.size, noise_dim))
         loss_G = gan.train_on_batch(x=[batch_noise, batch_right_cond_vecs], y=ONES_ptr)
         losses_G += [ loss_G ]
 
