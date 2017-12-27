@@ -15,7 +15,7 @@ G.load_weights(model_path('Generator'))
 with open(args.testing_text) as file:
     for line in file:
         line     = line.split(',')
-        text_id  = int(line[0])
+        text_id  = line[0]
 
         cond = line[1].strip()
         cond = re.sub('\s+', ' ', cond)     # Reduce successive spaces.
@@ -31,4 +31,4 @@ with open(args.testing_text) as file:
         noises    = CommonNoiseGenerator(size=(num_gene_imgs_per_text, noise_dim))
         gene_imgs = G.predict([noises, cond_vec])
         for i in range(num_gene_imgs_per_text):
-            scipy.misc.imsave('samples/sample_%d_%d.jpg' % (text_id, i+1), gene_imgs[i])
+            scipy.misc.imsave('samples/sample_%s_%d.jpg' % (text_id, i+1), gene_imgs[i])

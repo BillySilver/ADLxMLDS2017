@@ -11,3 +11,6 @@ hw1/data/fbank*
 hw2/MLDS_hw2_data/peer_review/*
 hw2/MLDS_hw2_data/testing_data/*
 hw2/MLDS_hw2_data/training_data/*
+
+!hw4/results/sample_*.jpg
+!hw4/results/iwgan*.py
