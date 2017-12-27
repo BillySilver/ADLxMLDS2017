@@ -19,14 +19,21 @@ with open(args.testing_text) as file:
 
         cond = line[1].strip()
         cond = re.sub('\s+', ' ', cond)     # Reduce successive spaces.
-        if re.findall('eyes.+hair', cond) != []:
-            # Make sure 'hair' first if 'eyes' is in front of 'hair'.
-            cond = cond.split()
-            cond = cond[2: ] + cond[ :2]
-            cond = ' '.join(cond)
-        cond_id  = cond_vec_ids[cond]
-        cond_vec = cond_vecs[cond_id]
+
+        attr_ids = ()
+        for attr in ['hair', 'eyes']:
+            img_attr = re.findall('[^ ]+ %s' % attr, cond)
+            if len(img_attr) > 0:
+                img_attr = img_attr[0]
+                attr_id  = cond_vec_ids[img_attr]
+            else:
+                attr_id = -1
+            #
+            attr_ids += (attr_id, )
+
+        cond_vec = cond_vecs[list(attr_ids)]
         cond_vec = np.tile(cond_vec, (num_gene_imgs_per_text, 1))
+        cond_vec = cond_vec.reshape((num_gene_imgs_per_text, -1))
 
         noises    = CommonNoiseGenerator(size=(num_gene_imgs_per_text, noise_dim))
         gene_imgs = G.predict([noises, cond_vec])

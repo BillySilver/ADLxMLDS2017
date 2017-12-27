@@ -24,7 +24,7 @@ with open('models/hair_eyes_vec.txt') as file:
         cond_id += 1
 
 img_shape = (64, 64, 3)
-cond_dim  = cond_vecs.shape[-1]
+cond_dim  = cond_vecs.shape[-1] * 2
 noise_dim = 128
 
 def CommonNoiseGenerator(size):
