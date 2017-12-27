@@ -14,3 +14,4 @@ hw2/MLDS_hw2_data/training_data/*
 
 !hw4/results/sample_*.jpg
 !hw4/results/iwgan*.py
+!hw4/results/READ_RESULTS.md
