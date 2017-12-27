@@ -7,15 +7,20 @@ Setting
 #### Common setting
 
 * z ~ U(-1, 1) ^ 128
-* 2400 dimensional condition vector to summarize attributes.
+* 4800 dimensional condition vector to represent two attributes "hair" and "eyes".
+    * the first 2400 dimensions are to describe "hair", and the rest is to "eyes".
+    * null attribute is represent by a zero-vector.
 
 #### Training ([train.py](../train.py))
 
 * 15711 valid images
+* batch size: 64
+    * 246 updates per epoch
 * 300+300 epochs
+    * 147600 updates
 * z for G and z for D are i.i.d. for each step
 
-Check training history [iwgan4.bugfix_identical_cond.py](iwgan4.bugfix_identical_cond.py).
+Check training history [iwgan5.split_cond.py](iwgan5.split_cond.py).
 
 #### Testing ([generate.py](../generate.py))
 
