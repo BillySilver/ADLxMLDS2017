@@ -19,8 +19,9 @@ Setting
 * 600 epochs
     * 138000 updates
 * z for G and z for D are i.i.d. for each step
+* Balance attributes of valid images while training D.
 
-Check training history [iwgan7.valid_imgs_fixed_600.py](iwgan7.valid_imgs_fixed_600.py).
+Check training history [iwgan9.balanced_categories.py](iwgan9.balanced_categories.py).
 
 #### Testing ([generate.py](../generate.py))
 

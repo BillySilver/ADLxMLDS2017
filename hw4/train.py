@@ -17,6 +17,28 @@ for img_id in range(len(img_attrs)):
         valid_img_ids += [ img_id ]
 valid_img_ids = np.array(valid_img_ids)
 
+# Categorize valid_img_ids by attributes. Balance.
+# Lengths:
+# [ 244, 557, 731, 619, 698, 681, 898, 1256, 1277, 1800, 2509, 2567,
+#   128, 194, 226, 452, 791, 1025, 1253, 1477, 1473, 2229, 2995 ]
+cate_valid_img_ids = []
+for attr in ['hair', 'eyes']:
+    valid_attr = valid_attrs[attr]
+    cate_valid_img_ids_for_this_attr = [ [] for _ in range(len(valid_attr)) ]
+    #
+    for img_id in valid_img_ids:
+        img_attr = img_attrs[img_id][attr]
+        if len(img_attr) == 1:
+            cate_valid_img_ids_for_this_attr[ valid_attr.index(img_attr[0]) ].append(img_id)
+    #
+    cate_valid_img_ids += cate_valid_img_ids_for_this_attr
+
+def choose_balanced_valid_img_ids(cate_valid_img_ids, batch_sz_):
+    cate_idcs = np.random.choice(len(cate_valid_img_ids), batch_sz_)
+    batch_ids = [ np.random.choice(cate_valid_img_ids[cate_idx], 1) for cate_idx in cate_idcs ]
+    batch_ids = np.concatenate(batch_ids)
+    return batch_ids
+
 
 G   = Generator(img_shape, cond_dim=cond_dim, noise_dim=noise_dim)
 D   = Discriminator(img_shape, cond_dim=cond_dim)
@@ -42,9 +64,10 @@ for i_epoch in range(epochs):
     losses_G = []
     losses_D = []
 
-    np.random.shuffle(valid_img_ids)
     for batch_beg in range(0, valid_img_ids.size, batch_size):
-        batch_ids  = valid_img_ids[batch_beg : batch_beg+batch_size]
+        batch_sz_  = batch_size if batch_beg + batch_size <= valid_img_ids.size \
+                                else (valid_img_ids.size - batch_beg)
+        batch_ids  = choose_balanced_valid_img_ids(cate_valid_img_ids, batch_sz_)
         batch_imgs = real_imgs[batch_ids]
         batch_right_cond_vecs, batch_wrong_cond_vecs = convert_attrs_to_cond_vecs(batch_ids)
 
