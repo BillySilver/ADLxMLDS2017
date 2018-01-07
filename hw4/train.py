@@ -9,7 +9,8 @@ for img_id in range(len(img_attrs)):
     flag = False
     for attr in ['hair', 'eyes']:
         if len(img_attrs[img_id][attr]) > 1:
-            continue
+            flag = False
+            break
         if len(img_attrs[img_id][attr]) == 1:
             flag = True
     if flag:
@@ -31,7 +32,7 @@ except:
     print('\n* Create a new model. *\n')
 
 
-epochs     = 300
+epochs     = 600
 batch_size = 64
 ONES       = np.ones(shape=(batch_size, 1))
 ONES_RES   = np.ones(shape=(valid_img_ids.size % batch_size, 1))    # for the last part data in one epoch.

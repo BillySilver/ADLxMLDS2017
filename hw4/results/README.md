@@ -13,14 +13,14 @@ Setting
 
 #### Training ([train.py](../train.py))
 
-* 15711 valid images
+* 14662 valid images
 * batch size: 64
-    * 246 updates per epoch
-* 300+300 epochs
-    * 147600 updates
+    * 230 updates per epoch
+* 600 epochs
+    * 138000 updates
 * z for G and z for D are i.i.d. for each step
 
-Check training history [iwgan5.split_cond.py](iwgan5.split_cond.py).
+Check training history [iwgan7.valid_imgs_fixed_600.py](iwgan7.valid_imgs_fixed_600.py).
 
 #### Testing ([generate.py](../generate.py))
 
